@@ -15,8 +15,8 @@ export const NAVIGATION_ITEMS: NavItem[] = [
     href: "/doctors",
   },
   {
-    label: "الملف الشخصي",
-    href: "/profile",
+    label: "سجل عياداتك",
+    href: "/register-clinic",
   },
 ];
 
