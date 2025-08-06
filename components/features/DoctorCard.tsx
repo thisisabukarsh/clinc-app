@@ -43,7 +43,15 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
     setIsBookingModalOpen(true);
   };
 
-  const handleBookingConfirm = (bookingDetails: any) => {
+  const handleBookingConfirm = (bookingDetails: {
+    doctorId: string;
+    doctorName: string;
+    date: Date;
+    time: string;
+    price: number;
+    clinic: string;
+    location: string;
+  }) => {
     console.log("Booking confirmed:", bookingDetails);
     onBookAppointment(doctor.id);
     alert(

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Calendar, User, FileText, Pill } from "lucide-react";
-import { Appointment, MedicalFile, Prescription } from "@/types";
+import { Appointment } from "@/types";
 import { formatDate } from "@/lib/utils";
 import Modal from "@/components/ui/Modal";
 import Card from "@/components/ui/Card";

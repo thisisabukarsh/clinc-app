@@ -24,7 +24,7 @@ export default function ProfilePage() {
   }>({});
 
   const validateForm = () => {
-    const newErrors: any = {};
+    const newErrors: Record<string, string> = {};
 
     if (!formData.name) {
       newErrors.name = "الاسم مطلوب";

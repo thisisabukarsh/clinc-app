@@ -1,4 +1,4 @@
-import { Doctor, Appointment, MedicalFile, Prescription } from "@/types";
+import { Doctor, Appointment, MedicalFile } from "@/types";
 
 // Mock Doctors Data
 export const mockDoctors: Doctor[] = [
@@ -219,7 +219,7 @@ export const mockMedicalFiles: MedicalFile[] = [
 ];
 
 // Mock Time Slots Data
-export const generateMockTimeSlots = (date: Date, doctorId: string) => {
+export const generateMockTimeSlots = (date: Date, _doctorId: string) => {
   const timeSlots = [
     { time: "09:00", available: true, price: 20 },
     { time: "09:30", available: false, price: 20 },

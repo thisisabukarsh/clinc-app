@@ -3,7 +3,7 @@
 import React from "react";
 import { Calendar, Clock, User, FileText, Star } from "lucide-react";
 import { Appointment } from "@/types";
-import { formatDate, formatTime } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 

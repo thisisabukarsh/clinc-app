@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Mail, Eye, EyeOff } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
@@ -62,7 +62,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
       } else {
         setErrors({ general: "البريد الإلكتروني أو كلمة المرور غير صحيحة" });
       }
-    } catch (error) {
+    } catch {
       setErrors({
         general: "حدث خطأ في تسجيل الدخول. يرجى المحاولة مرة أخرى.",
       });

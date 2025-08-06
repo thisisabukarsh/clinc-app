@@ -44,7 +44,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
   const [step, setStep] = useState<"date" | "time" | "confirm">("date");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTime, setSelectedTime] = useState<string>("");
-  const [timeSlots, setTimeSlots] = useState<any[]>([]);
+  const [timeSlots, setTimeSlots] = useState<{ time: string; available: boolean; price: number }[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {

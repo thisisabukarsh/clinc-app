@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { User, Mail, Lock, Phone, Eye, EyeOff } from "lucide-react";
+import { User, Mail, Phone, Eye, EyeOff } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
@@ -38,7 +38,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
   const { register, isLoading } = useAuth();
 
   const validateForm = () => {
-    const newErrors: any = {};
+    const newErrors: Record<string, string> = {};
 
     if (!formData.name) {
       newErrors.name = "الاسم مطلوب";
@@ -104,7 +104,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
         });
         setErrors({});
       }
-    } catch (error) {
+    } catch {
       setErrors({
         general: "حدث خطأ في إنشاء الحساب. يرجى المحاولة مرة أخرى.",
       });

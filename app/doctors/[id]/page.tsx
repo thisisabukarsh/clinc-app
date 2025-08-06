@@ -37,7 +37,15 @@ export default function DoctorProfilePage() {
     ));
   };
 
-  const handleBookingConfirm = (bookingDetails: any) => {
+  const handleBookingConfirm = (bookingDetails: {
+    doctorId: string;
+    doctorName: string;
+    date: Date;
+    time: string;
+    price: number;
+    clinic: string;
+    location: string;
+  }) => {
     console.log("Booking confirmed:", bookingDetails);
     // TODO: Implement actual booking logic
     alert(

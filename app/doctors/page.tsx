@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import SearchBar from "@/components/features/SearchBar";
 import DoctorCard from "@/components/features/DoctorCard";
@@ -8,7 +8,7 @@ import { mockDoctors } from "@/lib/mockData";
 import { Doctor } from "@/types";
 
 export default function DoctorsPage() {
-  const [doctors, setDoctors] = useState<Doctor[]>(mockDoctors);
+  const [doctors] = useState<Doctor[]>(mockDoctors);
   const [filteredDoctors, setFilteredDoctors] = useState<Doctor[]>(mockDoctors);
   const [loading, setLoading] = useState(false);
 
