@@ -74,6 +74,13 @@ export const FOOTER_LINKS = {
   ],
 };
 
+// Contact information
+export const CONTACT_INFO = {
+  whatsapp: "+962791234567", // Replace with actual business WhatsApp number
+  email: "info@mawa3idi.com",
+  phone: "+962-6-1234567",
+};
+
 // App configuration
 export const APP_CONFIG = {
   name: "عياداتي",
