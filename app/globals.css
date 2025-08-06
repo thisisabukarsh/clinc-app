@@ -1,1 +1,27 @@
 @import "tailwindcss";
+
+@layer base {
+  html {
+    direction: rtl;
+  }
+
+  body {
+    font-family: var(--font-cairo), Cairo, sans-serif;
+  }
+
+  /* Arabic font optimization */
+  * {
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+}
+
+@layer components {
+  /* Custom RTL utilities */
+  .rtl {
+    direction: rtl;
+  }
+
+  .ltr {
+    direction: ltr;
+  }
+}
