@@ -42,7 +42,7 @@ const Header: React.FC = () => {
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
           ? "bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200"
-          : "bg-transparent"
+          : "bg-transparent text-white"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -51,20 +51,30 @@ const Header: React.FC = () => {
           <div className="flex items-center">
             <Link href="/" className="flex items-center gap-3">
               <Logo width={40} height={40} />
-              <span className="text-xl font-bold text-gray-900">
+              <span
+                className={`text-xl font-bold ${
+                  isScrolled ? "text-gray-900" : "text-white"
+                }`}
+              >
                 {APP_CONFIG.name}
               </span>
             </Link>
           </div>
 
           {/* Navigation - Center */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-6">
             {NAVIGATION_ITEMS.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`text-sm font-medium transition-colors duration-200 hover:text-primary-600 ${
-                  pathname === item.href ? "text-primary-600" : "text-gray-700"
+                className={`text-sm font-medium transition-all duration-200 hover:text-primary-600 relative py-2 ${
+                  pathname === item.href
+                    ? isScrolled
+                      ? "text-gray-900 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-gray-900"
+                      : "text-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-white"
+                    : isScrolled
+                    ? "text-gray-900"
+                    : "text-white"
                 }`}
               >
                 {item.label}
@@ -82,11 +92,19 @@ const Header: React.FC = () => {
                   onClick={logout}
                   className="flex items-center gap-1"
                 >
-                  <span>تسجيل خروج</span>
+                  <span
+                    className={`${isScrolled ? "text-gray-900" : "text-white"}`}
+                  >
+                    تسجيل خروج
+                  </span>
                   <LogOut className="w-4 h-4" />
                 </Button>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-gray-700">
+                  <span
+                    className={`text-sm font-medium ${
+                      isScrolled ? "text-gray-900" : "text-white"
+                    }`}
+                  >
                     {user.name}
                   </span>
                   <User className="w-5 h-5 text-gray-600" />
@@ -96,13 +114,17 @@ const Header: React.FC = () => {
               <>
                 <button
                   onClick={() => setIsLoginModalOpen(true)}
-                  className="text-gray-600 hover:text-primary-600 transition-colors duration-200 text-sm font-medium"
+                  className={`text-gray-600 hover:text-primary-600 transition-colors duration-200 text-sm font-medium ${
+                    isScrolled ? "text-gray-900" : "text-white"
+                  }`}
                 >
                   تسجيل دخول
                 </button>
                 <Button
                   onClick={() => setIsRegisterModalOpen(true)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
+                  className={`bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
+                    isScrolled ? "text-white" : "text-white"
+                  }`}
                 >
                   إنشاء حساب
                 </Button>

@@ -82,6 +82,14 @@ const config: Config = {
         medium:
           "0 4px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
       },
+      screens: {
+        "2xs": "280px",
+        xs: "320px",
+        "2xl": "1440px",
+        "3xl": "1920px",
+        "4xl": "2560px",
+        "5xl": "3840px",
+      },
     },
   },
   plugins: [],
