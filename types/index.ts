@@ -96,3 +96,18 @@ export interface CardProps {
   className?: string;
   onClick?: () => void;
 }
+
+export interface MedicalSpecialty {
+  id: string;
+  name: string;
+  nameAr: string;
+  iconUrl: string;
+  slug: string;
+}
+
+export interface MedicalSpecialtiesSectionProps {
+  specialties: MedicalSpecialty[];
+  currentPage?: number;
+  onPageChange?: (page: number) => void;
+  className?: string;
+}

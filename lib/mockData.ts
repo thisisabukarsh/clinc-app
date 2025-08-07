@@ -246,3 +246,76 @@ export const generateMockTimeSlots = (date: Date, _doctorId: string) => {
     available: slot.available && (index + randomFactor) % 4 !== 0,
   }));
 };
+
+export const medicalSpecialties = [
+  {
+    id: "1",
+    name: "Dermatology",
+    nameAr: "عيادة جلدية",
+    iconUrl: "/icon.png",
+    slug: "dermatology",
+  },
+  {
+    id: "2",
+    name: "Dentistry",
+    nameAr: "عيادة اسنان",
+    iconUrl: "/icon.png",
+    slug: "dentistry",
+  },
+  {
+    id: "3",
+    name: "Internal Medicine",
+    nameAr: "عيادة باطنية",
+    iconUrl: "/icon.png",
+    slug: "internal-medicine",
+  },
+  {
+    id: "4",
+    name: "Cardiology",
+    nameAr: "عيادة قلبية",
+    iconUrl: "/icon.png",
+    slug: "cardiology",
+  },
+  {
+    id: "5",
+    name: "Ear, Nose & Throat",
+    nameAr: "عيادة أذن وحنجرة",
+    iconUrl: "/icon.png",
+    slug: "ent",
+  },
+  {
+    id: "6",
+    name: "Orthopedics",
+    nameAr: "عيادة عظام",
+    iconUrl: "/icon.png",
+    slug: "orthopedics",
+  },
+  {
+    id: "7",
+    name: "Neurology",
+    nameAr: "عيادة عصبية",
+    iconUrl: "/icon.png",
+    slug: "neurology",
+  },
+  {
+    id: "8",
+    name: "Ophthalmology",
+    nameAr: "عيادة عيون",
+    iconUrl: "/icon.png",
+    slug: "ophthalmology",
+  },
+  {
+    id: "9",
+    name: "Pediatrics",
+    nameAr: "عيادة أطفال",
+    iconUrl: "/icon.png",
+    slug: "pediatrics",
+  },
+  {
+    id: "10",
+    name: "Gynecology",
+    nameAr: "عيادة نسائية",
+    iconUrl: "/icon.png",
+    slug: "gynecology",
+  },
+];
