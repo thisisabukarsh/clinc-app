@@ -1,5 +1,4 @@
 import React from "react";
-import DeviceMockup from "@/components/ui/DeviceMockup";
 import SearchBar from "@/components/features/SearchBar";
 
 const HeroSection: React.FC = () => {

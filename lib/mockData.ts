@@ -219,7 +219,7 @@ export const mockMedicalFiles: MedicalFile[] = [
 ];
 
 // Mock Time Slots Data
-export const generateMockTimeSlots = (date: Date, _doctorId: string) => {
+export const generateMockTimeSlots = (date: Date) => {
   const timeSlots = [
     { time: "09:00", available: true, price: 20 },
     { time: "09:30", available: false, price: 20 },

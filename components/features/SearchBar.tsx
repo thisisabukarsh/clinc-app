@@ -4,21 +4,37 @@ import { useRouter } from "next/navigation";
 import { MEDICAL_SPECIALTIES } from "@/lib/constants";
 import DeviceMockup from "../ui/DeviceMockup";
 
-const SearchBar: React.FC = () => {
+interface SearchBarProps {
+  onSearch?: (query: string, specialty: string, location: string) => void;
+  className?: string;
+}
+
+const SearchBar: React.FC<SearchBarProps> = ({ onSearch, className = "" }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [location, setLocation] = useState("");
   const router = useRouter();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    const params = new URLSearchParams();
-    if (searchQuery) params.set("search", searchQuery);
-    if (location) params.set("location", location);
-    router.push(`/doctors?${params.toString()}`);
+
+    // Call the onSearch prop if provided
+    if (onSearch) {
+      onSearch(searchQuery, "", location);
+    } else {
+      // Default behavior - navigate to doctors page
+      const params = new URLSearchParams();
+      if (searchQuery) params.set("search", searchQuery);
+      if (location) params.set("location", location);
+      router.push(`/doctors?${params.toString()}`);
+    }
   };
 
   const handleSpecialtyClick = (specialtyId: string) => {
-    router.push(`/doctors?specialty=${specialtyId}`);
+    if (onSearch) {
+      onSearch("", specialtyId, location);
+    } else {
+      router.push(`/doctors?specialty=${specialtyId}`);
+    }
   };
 
   return (
@@ -36,7 +52,7 @@ const SearchBar: React.FC = () => {
         <DeviceMockup priority className="w-full opacity-90" />
       </div>
       <div
-        className="bg-white rounded-3xl shadow-xl absolute z-30 bottom-0 -translate-x-1/2 left-1/2 translate-y-full w-full max-w-5xl"
+        className={`bg-white rounded-3xl shadow-xl absolute z-30 bottom-0 -translate-x-1/2 left-1/2 translate-y-full w-full max-w-5xl ${className}`}
         dir="rtl"
       >
         {/* Search Container */}

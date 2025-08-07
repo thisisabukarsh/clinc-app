@@ -8,6 +8,7 @@ import { formatCurrency } from "@/lib/utils";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import BookingModal from "./BookingModal";
+import Image from "next/image";
 
 interface DoctorCardProps {
   doctor: Doctor;
@@ -69,11 +70,13 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
       onClick={handleCardClick}
     >
       {/* Doctor Image */}
-      <div className="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
+      <div className="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center overflow-hidden">
         {doctor.image ? (
-          <img
+          <Image
             src={doctor.image}
             alt={doctor.name}
+            width={80}
+            height={80}
             className="w-full h-full rounded-full object-cover"
           />
         ) : (

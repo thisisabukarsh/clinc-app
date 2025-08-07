@@ -54,7 +54,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
       setLoading(true);
       // Simulate API call to get available time slots
       setTimeout(() => {
-        const slots = generateMockTimeSlots(selectedDate, doctor.id);
+        const slots = generateMockTimeSlots(selectedDate);
         setTimeSlots(slots);
         setLoading(false);
       }, 500);
