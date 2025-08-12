@@ -17,15 +17,23 @@ const Header: React.FC = () => {
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      setIsScrolled(scrollTop > 10);
-    };
+  // Check if we're on the homepage
+  const isHomePage = pathname === "/";
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  useEffect(() => {
+    if (isHomePage) {
+      const handleScroll = () => {
+        const scrollTop = window.scrollY;
+        setIsScrolled(scrollTop > 10);
+      };
+
+      window.addEventListener("scroll", handleScroll);
+      return () => window.removeEventListener("scroll", handleScroll);
+    } else {
+      // For non-homepage pages, always set solid background
+      setIsScrolled(true);
+    }
+  }, [isHomePage]);
 
   const handleSwitchToRegister = () => {
     setIsLoginModalOpen(false);
