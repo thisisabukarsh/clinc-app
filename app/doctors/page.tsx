@@ -6,6 +6,7 @@ import SearchBar from "@/components/features/SearchBar";
 import DoctorCard from "@/components/features/DoctorCard";
 import { mockDoctors } from "@/lib/mockData";
 import { Doctor } from "@/types";
+import { SearchSection } from "@/components/doctors/SearchSection";
 
 export default function DoctorsPage() {
   const [doctors] = useState<Doctor[]>(mockDoctors);
@@ -49,20 +50,17 @@ export default function DoctorsPage() {
     console.log("Booking appointment for doctor:", doctorId);
   };
 
+  // const handleSearch = (specialty: string, location: string, query: string) => {
+  //   console.log("Search initiated:", { specialty, location, query });
+  //   // Handle search - could navigate to doctors page with filters
+  //   // router.push(`/doctors?specialty=${specialty}&location=${location}&query=${query}`);
+  // };
+
   return (
     <MainLayout>
-      <div className="bg-gray-50 min-h-screen">
+      <div className="bg-gray-50 min-h-screen mt-16">
         {/* Header Section */}
-        <section className="bg-white shadow-soft">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <h1 className="text-3xl font-bold text-gray-900 text-center mb-8">
-              ابحث عن طبيب
-            </h1>
-
-            {/* Search Bar */}
-            <SearchBar onSearch={handleSearch} className="max-w-4xl mx-auto" />
-          </div>
-        </section>
+        <SearchSection onSearch={handleSearch} />
 
         {/* Results Section */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
