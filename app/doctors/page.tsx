@@ -6,8 +6,10 @@ import { mockDoctors } from "@/lib/mockData";
 import { Doctor } from "@/types";
 import { SearchSection } from "@/components/doctors/SearchSection";
 import { TopRatedDoctorCard } from "@/components/features/TopRatedDoctorCard";
+import { useRouter } from "next/navigation";
 
 export default function DoctorsPage() {
+  const router = useRouter();
   const [doctors] = useState<Doctor[]>(mockDoctors);
   const [filteredDoctors, setFilteredDoctors] = useState<Doctor[]>(mockDoctors);
   const [loading, setLoading] = useState(false);
@@ -46,7 +48,8 @@ export default function DoctorsPage() {
 
   const handleBookAppointment = (doctorId: string) => {
     // TODO: Navigate to booking page or open booking modal
-    console.log("Booking appointment for doctor:", doctorId);
+    // console.log("Booking appointment for doctor:", doctorId);
+    router.push(`/doctors/${doctorId}`);
   };
 
   return (
@@ -90,7 +93,7 @@ export default function DoctorsPage() {
                 <TopRatedDoctorCard
                   key={doctor.id}
                   doctor={doctor}
-                  // onClick={handleDoctorClick}
+                  onClick={() => handleBookAppointment(doctor.id)}
                   onBookAppointment={handleBookAppointment}
                 />
               ))}

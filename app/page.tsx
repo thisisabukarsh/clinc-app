@@ -8,8 +8,10 @@ import TopRatedDoctorsSection from "@/components/home/TopRatedDoctorsSection";
 import WhyMyClinicsSection from "@/components/home/WhyMyClinicsSection";
 import { medicalSpecialties, topRatedDoctors } from "@/lib/mockData";
 import { MedicalSpecialty, Doctor } from "@/types";
+import { useRouter } from "next/navigation";
 
 export default function HomePage() {
+  const router = useRouter();
   const handleSpecialtyClick = (specialty: MedicalSpecialty) => {
     console.log("Specialty clicked:", specialty);
     // Handle specialty selection - could navigate to specialty page
@@ -17,14 +19,15 @@ export default function HomePage() {
   };
 
   const handleDoctorClick = (doctor: Doctor) => {
-    console.log("Doctor clicked:", doctor);
+    // console.log("Doctor clicked:", doctor);
     // Handle doctor selection - could navigate to doctor details page
-    // router.push(`/doctors/${doctor.id}`);
+    router.push(`/doctors/${doctor.id}`);
   };
 
   const handleBookAppointment = (doctorId: string) => {
-    console.log("Booking appointment for doctor:", doctorId);
+    // console.log("Booking appointment for doctor:", doctorId);
     // Handle booking - could open booking modal or navigate to booking page
+    router.push(`/doctors/${doctorId}`);
   };
 
   return (
