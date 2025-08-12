@@ -5,9 +5,9 @@ import MainLayout from "@/components/layout/MainLayout";
 import HeroSection from "@/components/home/HeroSection";
 import MedicalSpecialtiesSection from "@/components/home/MedicalSpecialtiesSection";
 import TopRatedDoctorsSection from "@/components/home/TopRatedDoctorsSection";
+import WhyMyClinicsSection from "@/components/home/WhyMyClinicsSection";
 import { medicalSpecialties, topRatedDoctors } from "@/lib/mockData";
 import { MedicalSpecialty, Doctor } from "@/types";
-import WhyMyClinicsSection from "@/components/sections/WhyMyClinicsSection";
 
 export default function HomePage() {
   const handleSpecialtyClick = (specialty: MedicalSpecialty) => {
@@ -39,7 +39,6 @@ export default function HomePage() {
         onDoctorClick={handleDoctorClick}
         onBookAppointment={handleBookAppointment}
       />
-
       <WhyMyClinicsSection />
     </MainLayout>
   );
