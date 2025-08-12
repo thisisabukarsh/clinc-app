@@ -2,11 +2,10 @@
 
 import React, { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
-import SearchBar from "@/components/features/SearchBar";
-import DoctorCard from "@/components/features/DoctorCard";
 import { mockDoctors } from "@/lib/mockData";
 import { Doctor } from "@/types";
 import { SearchSection } from "@/components/doctors/SearchSection";
+import { TopRatedDoctorCard } from "@/components/features/TopRatedDoctorCard";
 
 export default function DoctorsPage() {
   const [doctors] = useState<Doctor[]>(mockDoctors);
@@ -50,12 +49,6 @@ export default function DoctorsPage() {
     console.log("Booking appointment for doctor:", doctorId);
   };
 
-  // const handleSearch = (specialty: string, location: string, query: string) => {
-  //   console.log("Search initiated:", { specialty, location, query });
-  //   // Handle search - could navigate to doctors page with filters
-  //   // router.push(`/doctors?specialty=${specialty}&location=${location}&query=${query}`);
-  // };
-
   return (
     <MainLayout>
       <div className="bg-gray-50 min-h-screen mt-16">
@@ -72,12 +65,12 @@ export default function DoctorsPage() {
 
             {/* Sort Options */}
             <div className="flex items-center space-x-4 space-x-reverse">
-              <span className="text-sm text-gray-600">ترتيب حسب:</span>
+              <span className="text-sm text-gray-600"> ترتيب حسب : </span>
+              &nbsp; &nbsp;
               <select className="text-sm border border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-primary-500">
                 <option>التقييم الأعلى</option>
                 <option>السعر الأقل</option>
                 <option>السعر الأعلى</option>
-                <option>الأقرب</option>
               </select>
             </div>
           </div>
@@ -92,11 +85,12 @@ export default function DoctorsPage() {
 
           {/* Doctors Grid */}
           {!loading && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
               {filteredDoctors.map((doctor) => (
-                <DoctorCard
+                <TopRatedDoctorCard
                   key={doctor.id}
                   doctor={doctor}
+                  // onClick={handleDoctorClick}
                   onBookAppointment={handleBookAppointment}
                 />
               ))}
