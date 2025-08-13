@@ -468,3 +468,27 @@ export const topRatedDoctors = [
     consultationTime: "60 دقيقة",
   },
 ];
+
+export const clinicImages = [
+  {
+    id: "1",
+    src: "/clinic-reception.jpg",
+    alt: "منطقة الاستقبال والانتظار",
+    title: "منطقة الاستقبال",
+    description: "منطقة استقبال مريحة ومهيأة لاستقبال المرضى",
+  },
+  {
+    id: "2",
+    src: "/clinic-consultation.jpg",
+    alt: "غرفة الاستشارة الطبية",
+    title: "غرفة الاستشارة",
+    description: "غرفة استشارة مجهزة بأحدث المعدات الطبية",
+  },
+  {
+    id: "3",
+    src: "/clinic-waiting.jpg",
+    alt: "منطقة الانتظار",
+    title: "منطقة الانتظار",
+    description: "منطقة انتظار واسعة ومريحة للمرضى",
+  },
+];
