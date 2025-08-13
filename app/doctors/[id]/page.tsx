@@ -7,9 +7,18 @@ import { BookOpen } from "lucide-react";
 import { topRatedDoctors, clinicImages } from "@/lib/mockData";
 import { DoctorProfileHeader } from "@/components/doctor-page";
 import { AppointmentBooking, ClinicImageSlider } from "@/components/features";
-import Button from "@/components/ui/Button";
-import BookingModal from "@/components/features/BookingModal";
+// import Button from "@/components/ui/Button";
 import MainLayout from "@/components/layout/MainLayout";
+
+interface BookingDetails {
+  doctorId: string;
+  doctorName: string;
+  date: Date;
+  time: string;
+  price: number;
+  clinic: string;
+  location: string;
+}
 
 export default function DoctorDetailPage() {
   const params = useParams();
@@ -34,16 +43,18 @@ export default function DoctorDetailPage() {
     );
   }
 
-  const handleBookAppointment = () => {
-    setIsBookingModalOpen(true);
-  };
+  // const handleBookAppointment = () => {
+  //   setIsBookingModalOpen(true);
+  //   console.log("Booking modal open", isBookingModalOpen);
+  // };
 
   const handleCloseBookingModal = () => {
     setIsBookingModalOpen(false);
   };
 
-  const handleBookingConfirm = (bookingDetails: any) => {
+  const handleBookingConfirm = (bookingDetails: BookingDetails) => {
     console.log("Booking confirmed:", bookingDetails);
+    console.log("Booking modal open", isBookingModalOpen);
   };
 
   return (

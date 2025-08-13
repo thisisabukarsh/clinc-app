@@ -9,10 +9,10 @@ interface SearchSectionProps {
 
 export const SearchSection: React.FC<SearchSectionProps> = ({
   className = "",
-  onSearch,
+  // onSearch,
 }) => {
   const handleSearch = (specialty: string, location: string, query: string) => {
-    // console.log("Search initiated:", { specialty, location, query });
+    console.log("Search initiated:", { specialty, location, query });
     // onSearch?.(specialty, location, query);
   };
 
