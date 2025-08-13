@@ -6,7 +6,7 @@ import Image from "next/image";
 import { BookOpen } from "lucide-react";
 import { topRatedDoctors, clinicImages } from "@/lib/mockData";
 import { DoctorProfileHeader } from "@/components/doctor-page";
-import { ClinicImageSlider } from "@/components/features";
+import { AppointmentBooking, ClinicImageSlider } from "@/components/features";
 import Button from "@/components/ui/Button";
 import BookingModal from "@/components/features/BookingModal";
 import MainLayout from "@/components/layout/MainLayout";
@@ -40,6 +40,10 @@ export default function DoctorDetailPage() {
 
   const handleCloseBookingModal = () => {
     setIsBookingModalOpen(false);
+  };
+
+  const handleBookingConfirm = (bookingDetails: any) => {
+    console.log("Booking confirmed:", bookingDetails);
   };
 
   return (
@@ -113,20 +117,8 @@ export default function DoctorDetailPage() {
 
               {/* Clinic Images Slider */}
               <div className="lg:w-1/2 ">
-                <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
-                  صور العيادة
-                </h3>
-                <ClinicImageSlider
-                  images={clinicImages}
-                  autoPlay={true}
-                  autoPlayInterval={4000}
-                  showArrows={true}
-                  showDots={true}
-                  showCaptions={true}
-                  className="w-full"
-                />
                 {/* Book Appointment Button */}
-                <div className="text-center mt-8">
+                {/* <div className="text-center mt-8">
                   <Button
                     onClick={handleBookAppointment}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg text-lg font-semibold"
@@ -134,18 +126,40 @@ export default function DoctorDetailPage() {
                   >
                     حجز موعد
                   </Button>
-                </div>
+                </div> */}
+                <AppointmentBooking
+                  doctor={doctor}
+                  onBookingConfirm={handleBookingConfirm}
+                  onCancel={handleCloseBookingModal}
+                  showHeader={true}
+                  showCancelButton={false}
+                  className="my-custom-styles"
+                />
               </div>
+            </div>
+            <div className="mt-16">
+              <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
+                صور العيادة
+              </h3>
+              <ClinicImageSlider
+                images={clinicImages}
+                autoPlay={true}
+                autoPlayInterval={4000}
+                showArrows={true}
+                showDots={true}
+                showCaptions={true}
+                className="w-full"
+              />
             </div>
           </div>
         </div>
 
         {/* Booking Modal */}
-        <BookingModal
+        {/* <BookingModal
           isOpen={isBookingModalOpen}
           onClose={handleCloseBookingModal}
           doctor={doctor}
-        />
+        /> */}
       </div>
     </MainLayout>
   );

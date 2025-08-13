@@ -72,7 +72,7 @@ export const ClinicImageSlider: React.FC<ClinicImageSliderProps> = ({
       className={`relative overflow-hidden rounded-2xl shadow-lg bg-gray-100 ${className}`}
     >
       {/* Main Image Container */}
-      <div className="relative h-96 w-full">
+      <div className="relative h-[600px] w-full">
         {images.map((image, index) => (
           <div
             key={image.id}

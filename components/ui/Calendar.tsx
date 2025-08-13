@@ -94,7 +94,7 @@ const Calendar: React.FC<CalendarProps> = ({
 
     // Empty cells for days before the first day of month
     for (let i = 0; i < firstDay; i++) {
-      days.push(<div key={`empty-${i}`} className="w-10 h-10" />);
+      days.push(<div key={`empty-${i}`} className="w-8 h-8" />);
     }
 
     // Days of the month
@@ -113,10 +113,10 @@ const Calendar: React.FC<CalendarProps> = ({
           onClick={() => handleDateClick(day)}
           disabled={disabled}
           className={cn(
-            "w-10 h-10 rounded-lg text-sm font-medium transition-colors",
-            "hover:bg-primary-100 focus:outline-none focus:ring-2 focus:ring-primary-500",
+            "w-8 h-8 rounded-full text-sm font-medium transition-all duration-200",
+            "hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
             {
-              "bg-primary-600 text-white hover:bg-primary-700": selected,
+              "bg-blue-600 text-white hover:bg-blue-700 shadow-md": selected,
               "text-gray-400 cursor-not-allowed": disabled,
               "text-gray-900 hover:bg-gray-100": !selected && !disabled,
             }
@@ -133,28 +133,28 @@ const Calendar: React.FC<CalendarProps> = ({
   return (
     <div
       className={cn(
-        "bg-white rounded-lg border border-gray-200 p-4",
+        "bg-white rounded-lg border border-gray-200 p-3",
         className
       )}
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3">
         <button
           onClick={handlePrevMonth}
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
         >
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight className="w-4 h-4" />
         </button>
 
-        <h3 className="text-lg font-semibold text-gray-900">
+        <h3 className="text-base font-semibold text-gray-900">
           {months[currentDate.getMonth()]} {currentDate.getFullYear()}
         </h3>
 
         <button
           onClick={handleNextMonth}
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft className="w-4 h-4" />
         </button>
       </div>
 
@@ -163,7 +163,7 @@ const Calendar: React.FC<CalendarProps> = ({
         {daysOfWeek.map((day) => (
           <div
             key={day}
-            className="w-10 h-10 flex items-center justify-center text-sm font-medium text-gray-500"
+            className="w-8 h-8 flex items-center justify-center text-xs font-medium text-gray-500"
           >
             {day}
           </div>
@@ -171,16 +171,16 @@ const Calendar: React.FC<CalendarProps> = ({
       </div>
 
       {/* Calendar days */}
-      <div className="grid grid-cols-7 gap-1">{renderCalendarDays()}</div>
+      <div className="grid grid-cols-7 gap-1 mb-3">{renderCalendarDays()}</div>
 
       {/* Legend */}
-      <div className="mt-4 flex items-center justify-center space-x-4 space-x-reverse text-xs text-gray-500">
-        <div className="flex items-center space-x-1 space-x-reverse">
-          <div className="w-3 h-3 bg-primary-600 rounded"></div>
+      <div className="flex items-center justify-center space-x-3 text-xs text-gray-500">
+        <div className="flex items-center space-x-1">
+          <div className="w-2.5 h-2.5 bg-blue-600 rounded-full"></div>
           <span>محدد</span>
         </div>
-        <div className="flex items-center space-x-1 space-x-reverse">
-          <div className="w-3 h-3 bg-gray-200 rounded"></div>
+        <div className="flex items-center space-x-1">
+          <div className="w-2.5 h-2.5 bg-gray-200 rounded"></div>
           <span>غير متاح</span>
         </div>
       </div>
