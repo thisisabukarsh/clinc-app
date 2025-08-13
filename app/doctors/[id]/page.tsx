@@ -1,249 +1,150 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useParams } from "next/navigation";
-import { Star, MapPin, Clock, Phone, Mail } from "lucide-react";
-import MainLayout from "@/components/layout/MainLayout";
+import Image from "next/image";
+import { BookOpen } from "lucide-react";
+import { topRatedDoctors, clinicImages } from "@/lib/mockData";
+import { DoctorProfileHeader } from "@/components/doctor-page";
+import { ClinicImageSlider } from "@/components/features";
 import Button from "@/components/ui/Button";
-import Card from "@/components/ui/Card";
 import BookingModal from "@/components/features/BookingModal";
-import { mockDoctors } from "@/lib/mockData";
-import { Doctor } from "@/types";
-import { formatCurrency } from "@/lib/utils";
+import MainLayout from "@/components/layout/MainLayout";
 
-export default function DoctorProfilePage() {
+export default function DoctorDetailPage() {
   const params = useParams();
-  const [doctor, setDoctor] = useState<Doctor | null>(null);
-  const [loading, setLoading] = useState(true);
+  const doctorId = params.id as string;
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
-  useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      const foundDoctor = mockDoctors.find((d) => d.id === params.id);
-      setDoctor(foundDoctor || null);
-      setLoading(false);
-    }, 500);
-  }, [params.id]);
-
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <Star
-        key={i}
-        className={`w-5 h-5 ${
-          i < rating ? "text-yellow-400 fill-current" : "text-gray-300"
-        }`}
-      />
-    ));
-  };
-
-  const handleBookingConfirm = (bookingDetails: {
-    doctorId: string;
-    doctorName: string;
-    date: Date;
-    time: string;
-    price: number;
-    clinic: string;
-    location: string;
-  }) => {
-    console.log("Booking confirmed:", bookingDetails);
-    // TODO: Implement actual booking logic
-    alert(
-      `تم حجز موعد مع ${
-        bookingDetails.doctorName
-      } في ${bookingDetails.date.toLocaleDateString("ar")} الساعة ${
-        bookingDetails.time
-      }`
-    );
-  };
-
-  if (loading) {
-    return (
-      <MainLayout>
-        <div className="flex justify-center items-center min-h-screen">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-        </div>
-      </MainLayout>
-    );
-  }
+  // Find the doctor by ID
+  const doctor = topRatedDoctors.find((d) => d.id === doctorId);
 
   if (!doctor) {
     return (
-      <MainLayout>
-        <div className="text-center py-12">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            لم يتم العثور على الطبيب
+            Doctor not found
           </h1>
-          <p className="text-gray-600">الطبيب المطلوب غير موجود</p>
+          <p className="text-gray-600">
+            The doctor you&apos;re looking for doesn&apos;t exist.
+          </p>
         </div>
-      </MainLayout>
+      </div>
     );
   }
 
+  const handleBookAppointment = () => {
+    setIsBookingModalOpen(true);
+  };
+
+  const handleCloseBookingModal = () => {
+    setIsBookingModalOpen(false);
+  };
+
   return (
     <MainLayout>
-      <div className="bg-gray-50 min-h-screen">
-        {/* Doctor Profile Header */}
-        <section className="bg-white shadow-soft">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Doctor Image */}
-              <div className="lg:col-span-1">
-                <div className="w-48 h-48 bg-gray-200 rounded-full mx-auto flex items-center justify-center">
-                  <span className="text-6xl">👨‍⚕️</span>
+      <div className="min-h-screen bg-gray-50 mt-16">
+        {/* Hero Section with Doctor Info */}
+        <div className="">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div className="flex lg:flex-row flex-col gap-16 justify-between w-full">
+              <div className="flex flex-col gap-8 w-full lg:w-1/2">
+                <div className="flex flex-col lg:flex-row gap-8">
+                  {/* Doctor Image */}
+                  <div className="lg:col-span-1 flex justify-center">
+                    <div className="w-64 h-64 bg-gray-200 rounded-3xl flex items-center justify-center overflow-hidden">
+                      {doctor.image ? (
+                        <Image
+                          src={doctor.image}
+                          alt={doctor.name}
+                          width={256}
+                          height={256}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : (
+                        <span className="text-6xl">👨‍⚕️</span>
+                      )}
+                    </div>
+                  </div>
+                  {/* Doctor Info */}
+                  <DoctorProfileHeader doctor={doctor} />
+                </div>
+
+                {/* Combined Doctor Information */}
+                <div className=" w-full">
+                  <h2 className="text-2xl font-bold text-black mb-6 flex items-center">
+                    <BookOpen className="w-6 h-6 text-black ml-3 mt-1" />
+                    نبذة عن الطبيب
+                  </h2>
+
+                  {/* Flowing Paragraph Style */}
+                  <div className="text-gray-700 leading-relaxed text-lg space-y-4">
+                    <p>{doctor.about}</p>
+
+                    <p>
+                      <span className="font-semibold ">المؤهلات العلمية:</span>{" "}
+                      {doctor.education}
+                    </p>
+
+                    <p>
+                      <span className="font-semibold ">الخبرة:</span>{" "}
+                      {doctor.experience}
+                    </p>
+
+                    <p>
+                      <span className="font-semibold ">الموقع:</span>{" "}
+                      {doctor.clinic} - {doctor.location}
+                    </p>
+
+                    <p>
+                      <span className="font-semibold ">ساعات العمل:</span>{" "}
+                      {doctor.availability}، ومدة الاستشارة{" "}
+                      {doctor.consultationTime}
+                    </p>
+
+                    <p>
+                      <span className="font-semibold ">اللغات:</span> يتحدث
+                      الطبيب {doctor.languages.join(" و ")}
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              {/* Doctor Info */}
-              <div className="lg:col-span-2">
-                <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                  {doctor.name}
-                </h1>
-
-                {/* Rating */}
-                <div className="flex items-center mb-4">
-                  {renderStars(doctor.rating)}
-                  <span className="text-lg text-gray-600 mr-2">
-                    {doctor.rating}
-                  </span>
-                </div>
-
-                {/* Specialty and Price */}
-                <div className="flex items-center space-x-4 space-x-reverse mb-6">
-                  <span className="text-lg text-gray-700">
-                    {doctor.specialty}
-                  </span>
-                  <span className="text-lg font-semibold text-primary-600">
-                    {formatCurrency(doctor.price, doctor.currency)}
-                  </span>
-                </div>
-
-                {/* Clinic Info */}
-                <div className="flex items-center space-x-4 space-x-reverse mb-6">
-                  <div className="flex items-center text-gray-600">
-                    <MapPin className="w-5 h-5 mr-2" />
-                    <span>
-                      {doctor.clinic} - {doctor.location}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex space-x-4 space-x-reverse">
+              {/* Clinic Images Slider */}
+              <div className="lg:w-1/2 ">
+                <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
+                  صور العيادة
+                </h3>
+                <ClinicImageSlider
+                  images={clinicImages}
+                  autoPlay={true}
+                  autoPlayInterval={4000}
+                  showArrows={true}
+                  showDots={true}
+                  showCaptions={true}
+                  className="w-full"
+                />
+                {/* Book Appointment Button */}
+                <div className="text-center mt-8">
                   <Button
+                    onClick={handleBookAppointment}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg text-lg font-semibold"
                     variant="primary"
-                    size="lg"
-                    onClick={() => setIsBookingModalOpen(true)}
                   >
                     حجز موعد
                   </Button>
-                  <Button variant="outline" size="lg">
-                    موقع العيادة
-                  </Button>
                 </div>
               </div>
             </div>
           </div>
-        </section>
-
-        {/* Doctor Biography */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <Card className="p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              نبذة عن الطبيب
-            </h2>
-            <p className="text-gray-700 leading-relaxed mb-6">
-              {doctor.biography}
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-2">الخبرة</h3>
-                <p className="text-gray-600">{doctor.experience}</p>
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-2">التعليم</h3>
-                <p className="text-gray-600">{doctor.education}</p>
-              </div>
-            </div>
-          </Card>
-        </section>
-
-        {/* Clinic Photos */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-            صور العيادة
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <Card key={i} className="overflow-hidden">
-                <div className="h-48 bg-gray-200 flex items-center justify-center">
-                  <span className="text-4xl">🏥</span>
-                </div>
-                <div className="p-4">
-                  <h3 className="font-semibold text-gray-900">
-                    صورة العيادة {i}
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    منطقة الاستقبال والانتظار
-                  </p>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </section>
-
-        {/* Contact Information */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <Card className="p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              معلومات التواصل
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="flex items-center space-x-3 space-x-reverse">
-                <Phone className="w-5 h-5 text-primary-600" />
-                <div>
-                  <p className="font-semibold text-gray-900">رقم الهاتف</p>
-                  <p className="text-gray-600">+962 79 123 4567</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-3 space-x-reverse">
-                <Mail className="w-5 h-5 text-primary-600" />
-                <div>
-                  <p className="font-semibold text-gray-900">
-                    البريد الإلكتروني
-                  </p>
-                  <p className="text-gray-600">info@clinic.com</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-3 space-x-reverse">
-                <Clock className="w-5 h-5 text-primary-600" />
-                <div>
-                  <p className="font-semibold text-gray-900">ساعات العمل</p>
-                  <p className="text-gray-600">
-                    الأحد - الخميس: 9:00 ص - 6:00 م
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-3 space-x-reverse">
-                <MapPin className="w-5 h-5 text-primary-600" />
-                <div>
-                  <p className="font-semibold text-gray-900">العنوان</p>
-                  <p className="text-gray-600">
-                    {doctor.clinic} - {doctor.location}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </section>
+        </div>
 
         {/* Booking Modal */}
         <BookingModal
           isOpen={isBookingModalOpen}
-          onClose={() => setIsBookingModalOpen(false)}
+          onClose={handleCloseBookingModal}
           doctor={doctor}
-          onBookingConfirm={handleBookingConfirm}
         />
       </div>
     </MainLayout>
