@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Calendar, Clock, User, FileText, Star } from "lucide-react";
+import { Calendar, Clock, FileText, Star } from "lucide-react";
 import { Appointment } from "@/types";
 import { formatDate } from "@/lib/utils";
 import Button from "@/components/ui/Button";
@@ -13,6 +13,7 @@ interface AppointmentCardProps {
   onReschedule?: (appointmentId: string) => void;
   onCancel?: (appointmentId: string) => void;
   onLeaveReview?: (appointmentId: string) => void;
+  onEdit?: (appointment: Appointment) => void;
   className?: string;
 }
 
@@ -22,6 +23,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
   onReschedule,
   onCancel,
   onLeaveReview,
+  onEdit,
   className = "",
 }) => {
   const isUpcoming = appointment.status === "upcoming";
@@ -55,94 +57,97 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
   };
 
   return (
-    <Card className={`p-6 ${className}`}>
-      <div className="flex justify-between items-start mb-4">
-        {/* Doctor Info */}
-        <div className="flex items-center space-x-3 space-x-reverse">
-          <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-            <User className="w-6 h-6 text-gray-500" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-900">
-              {appointment.doctorName}
-            </h3>
-            <p className="text-sm text-gray-600">طبيب متخصص</p>
-          </div>
-        </div>
+    <Card className={`p-3 px-4 bg-blue-50 border-blue-100 ${className}`}>
+      <div className="flex justify-between items-center" dir="ltr">
+        {/* Left Section - Action Buttons */}
+        <div className="flex gap-3 items-center justify-center">
+          {isUpcoming && (
+            <>
+              <Button
+                onClick={() => onEdit?.(appointment)}
+                variant="primary"
+                size="sm"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg min-w-[120px]"
+              >
+                تعديل الموعد
+              </Button>
+              <Button
+                onClick={() => onCancel?.(appointment.id)}
+                variant="outline"
+                size="sm"
+                className="bg-blue-100 hover:bg-blue-200 text-gray-700 border-blue-200 px-4 py-2 rounded-lg min-w-[120px]"
+              >
+                إلغاء
+              </Button>
+            </>
+          )}
 
-        {/* Status Badge */}
-        <span
-          className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor()}`}
-        >
-          {getStatusText()}
-        </span>
-      </div>
+          {isCompleted && (
+            <>
+              {appointment.medicalFile && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onViewMedicalFile?.(appointment)}
+                  className="bg-blue-100 hover:bg-blue-200 text-gray-700 border-blue-200 px-4 py-2 rounded-lg min-w-[120px]"
+                >
+                  <FileText className="w-4 h-4 mr-2" />
+                  الملف الطبي
+                </Button>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onLeaveReview?.(appointment.id)}
+                className="bg-blue-100 hover:bg-blue-200 text-gray-700 border-blue-200 px-4 py-2 rounded-lg min-w-[120px]"
+              >
+                <Star className="w-4 h-4 mr-2" />
+                تقييم الطبيب
+              </Button>
+            </>
+          )}
 
-      {/* Appointment Details */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="flex items-center space-x-2 space-x-reverse text-sm text-gray-600">
-          <Calendar className="w-4 h-4" />
-          <span>{formatDate(appointment.date)}</span>
-        </div>
-        <div className="flex items-center space-x-2 space-x-reverse text-sm text-gray-600">
-          <Clock className="w-4 h-4" />
-          <span>{appointment.time}</span>
-        </div>
-      </div>
-
-      {/* Actions */}
-      <div className="flex flex-wrap gap-2">
-        {isUpcoming && (
-          <>
+          {isCancelled && (
             <Button
               variant="primary"
               size="sm"
               onClick={() => onReschedule?.(appointment.id)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg min-w-[120px]"
             >
-              إعادة جدولة
+              حجز موعد جديد
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onCancel?.(appointment.id)}
-            >
-              إلغاء
-            </Button>
-          </>
-        )}
+          )}
+        </div>
 
-        {isCompleted && (
-          <>
-            {appointment.medicalFile && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onViewMedicalFile?.(appointment)}
-              >
-                <FileText className="w-4 h-4 ml-1" />
-                عرض الملف الطبي
-              </Button>
-            )}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onLeaveReview?.(appointment.id)}
-            >
-              <Star className="w-4 h-4 ml-1" />
-              تقييم الطبيب
-            </Button>
-          </>
-        )}
+        {/* Right Section - Doctor Info and Appointment Details */}
+        <div className="text-right flex flex-col gap-2">
+          {/* Doctor Info */}
+          <div className="">
+            <h3 className="font-semibold text-gray-900 text-lg">
+              {appointment.doctorName}
+            </h3>
+            {/* <p className="text-sm text-gray-600">طبيب متخصص</p> */}
+          </div>
 
-        {isCancelled && (
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => onReschedule?.(appointment.id)}
+          {/* Status Badge */}
+          {/* <span
+            className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor()}`}
           >
-            حجز موعد جديد
-          </Button>
-        )}
+            {getStatusText()}
+          </span> */}
+
+          {/* Appointment Details */}
+          <div className="grid grid-cols-2 ">
+            <div className="flex flex-row-reverse items-center justify-start space-x-2 text-sm text-gray-600 mx-2">
+              <Calendar className="w-4 h-4" />
+              <span>{formatDate(appointment.date)}</span>
+            </div>
+            <div className="flex flex-row-reverse items-center justify-start space-x-2 text-sm text-gray-600">
+              <Clock className="w-4 h-4" />
+              <span>{appointment.time}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </Card>
   );
