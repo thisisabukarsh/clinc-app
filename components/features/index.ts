@@ -1,0 +1,1 @@
+export { ClinicImageSlider } from "./ClinicImageSlider";
