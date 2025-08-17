@@ -7,11 +7,13 @@ import { useAuth } from "@/lib/contexts/AuthContext";
 interface ProtectedRouteProps {
   children: React.ReactNode;
   redirectTo?: string;
+  allowedRoles?: string[];
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   redirectTo = "/login",
+  allowedRoles,
 }) => {
   const { user, isLoading } = useAuth();
   const router = useRouter();
@@ -21,11 +23,14 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     if (!isLoading) {
       if (!user) {
         router.push(redirectTo);
+      } else if (allowedRoles && !allowedRoles.includes(user.role)) {
+        // User doesn't have required role
+        router.push("/unauthorized");
       } else {
         setShouldRender(true);
       }
     }
-  }, [user, isLoading, router, redirectTo]);
+  }, [user, isLoading, router, redirectTo, allowedRoles]);
 
   // Show loading spinner while checking authentication
   if (isLoading) {

@@ -130,6 +130,24 @@ export interface DoctorSearchResponse {
   data: APIDoctor[];
 }
 
+// Dashboard types
+export interface DashboardAppointment {
+  id: string;
+  patientName: string;
+  patientId: string;
+  date: string;
+  time: string;
+  status: "completed" | "upcoming" | "cancelled";
+  specialty: string;
+  notes: string;
+}
+
+export interface DashboardStats {
+  totalPatients: number;
+  upcomingAppointments: number;
+  todayAppointments: number;
+}
+
 // UI Component types
 export interface ButtonProps {
   children: React.ReactNode;

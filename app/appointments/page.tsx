@@ -3,13 +3,13 @@
 import React, { useState, useMemo } from "react";
 import { Appointment } from "@/types";
 import { mockAppointments } from "@/lib/mockData";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import MainLayout from "@/components/layout/MainLayout";
 import AppointmentCard from "@/components/features/AppointmentCard";
 import MedicalFileModal from "@/components/features/MedicalFileModal";
 import AddReviewModal from "@/components/features/AddReviewModal";
 import CancelAppointmentModal from "@/components/features/CancelAppointmentModal";
 import EditAppointmentModal from "@/components/features/EditAppointmentModal";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 export default function AppointmentsPage() {
   const [activeTab, setActiveTab] = useState<"upcoming" | "past">("upcoming");
@@ -99,7 +99,7 @@ export default function AppointmentsPage() {
   };
 
   return (
-    <ProtectedRoute>
+    <ProtectedRoute allowedRoles={["patient"]}>
       <MainLayout>
         <div className="bg-gray-50 min-h-screen">
           {/* Header */}
