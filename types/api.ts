@@ -29,6 +29,10 @@ export interface RegisterRequest {
   role: "patient" | "doctor" | "admin";
   address?: string;
   dateOfBirth?: string;
+  // Additional fields for doctors
+  specialty?: string;
+  location?: string;
+  fee?: number;
 }
 
 export interface AuthResponse {

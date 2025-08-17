@@ -10,6 +10,7 @@ interface ClinicRegistrationData {
   clinicName: string;
   email: string;
   password: string;
+  phone: string;
   specialization: string;
   consultationFee: number;
   currency: string;
@@ -21,17 +22,20 @@ interface ClinicRegistrationData {
 interface ClinicRegistrationFormProps {
   onSubmit: (data: ClinicRegistrationData) => void;
   className?: string;
+  isLoading?: boolean;
 }
 
 export const ClinicRegistrationForm: React.FC<ClinicRegistrationFormProps> = ({
   onSubmit,
   className = "",
+  isLoading = false,
 }) => {
   const [formData, setFormData] = useState<ClinicRegistrationData>({
     doctorName: "",
     clinicName: "",
     email: "",
     password: "",
+    phone: "",
     specialization: "طب اسنان",
     consultationFee: 20,
     currency: "دينار اردني",
@@ -104,6 +108,12 @@ export const ClinicRegistrationForm: React.FC<ClinicRegistrationFormProps> = ({
       newErrors.password = "كلمة المرور يجب أن تكون 6 أحرف على الأقل";
     }
 
+    if (!formData.phone.trim()) {
+      newErrors.phone = "رقم الهاتف مطلوب";
+    } else if (!/^07\d{8}$/.test(formData.phone)) {
+      newErrors.phone = "رقم الهاتف يجب أن يكون 10 أرقام ويبدأ بـ 07";
+    }
+
     if (!formData.clinicAddress.trim()) {
       newErrors.clinicAddress = "عنوان العيادة مطلوب";
     }
@@ -174,6 +184,15 @@ export const ClinicRegistrationForm: React.FC<ClinicRegistrationFormProps> = ({
         {/* Third Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
+            label="رقم الهاتف"
+            type="text"
+            value={formData.phone}
+            onChange={(value) => handleInputChange("phone", value)}
+            error={errors.phone}
+            placeholder="07xxxxxxxx"
+            required
+          />
+          <FormField
             label="الاختصاص"
             type="select"
             value={formData.specialization}
@@ -181,6 +200,10 @@ export const ClinicRegistrationForm: React.FC<ClinicRegistrationFormProps> = ({
             options={specializations}
             required
           />
+        </div>
+
+        {/* Fourth Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 text-right">
               سعر الكشفية
@@ -215,7 +238,7 @@ export const ClinicRegistrationForm: React.FC<ClinicRegistrationFormProps> = ({
           </div>
         </div>
 
-        {/* Fourth Row - Full Width */}
+        {/* Fifth Row - Full Width */}
         <div>
           <FormField
             label="عنوان العيادة"
@@ -252,8 +275,9 @@ export const ClinicRegistrationForm: React.FC<ClinicRegistrationFormProps> = ({
           type="submit"
           variant="primary"
           className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-3 rounded-lg text-lg font-semibold min-w-[200px]"
+          disabled={isLoading}
         >
-          تسجيل العيادة
+          {isLoading ? "جاري التسجيل..." : "تسجيل العيادة"}
         </Button>
       </div>
     </form>
