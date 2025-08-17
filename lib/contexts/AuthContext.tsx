@@ -2,6 +2,9 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { User } from "@/types";
+import AuthService from "@/lib/api/services/auth";
+import { TokenManager } from "@/lib/api/client";
+import ErrorHandler from "@/lib/utils/errorHandler";
 
 interface AuthContextType {
   user: User | null;
@@ -11,7 +14,9 @@ interface AuthContextType {
     name: string,
     email: string,
     password: string,
-    phone?: string
+    phone?: string,
+    address?: string,
+    dateOfBirth?: string
   ) => Promise<boolean>;
   logout: () => void;
   updateProfile: (userData: Partial<User>) => Promise<boolean>;
@@ -35,91 +40,183 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Mock authentication functions
+  /**
+   * Login user with email and password
+   */
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      const response = await AuthService.login({ email, password });
 
-    // Mock user data
-    const mockUser: User = {
-      id: "1",
-      name: "أحمد محمد",
-      email: email,
-      phone: "+962 79 123 4567",
-      appointments: [],
-    };
+      if (response.success && response.token && response.user) {
+        const { user: userData, token } = response;
 
-    // Simple mock validation
-    if (email === "patient@example.com" && password === "password") {
-      setUser(mockUser);
-      localStorage.setItem("user", JSON.stringify(mockUser));
+        // Store token
+        TokenManager.setToken(token);
+
+        // Transform API user to local User type
+        const localUser: User = {
+          id: userData.id,
+          name: userData.name,
+          email: userData.email,
+          phone: userData.phone,
+          role: userData.role,
+          isEmailVerified: userData.isEmailVerified ?? false,
+          createdAt: userData.createdAt ?? new Date().toISOString(),
+          updatedAt: userData.updatedAt ?? new Date().toISOString(),
+          appointments: [], // Will be loaded separately when needed
+        };
+
+        setUser(localUser);
+        setIsLoading(false);
+        return true;
+      }
+
       setIsLoading(false);
-      return true;
+      return false;
+    } catch (error) {
+      ErrorHandler.logError(error, "AuthContext.login");
+      setIsLoading(false);
+      return false;
     }
-
-    setIsLoading(false);
-    return false;
   };
 
+  /**
+   * Register new user
+   */
   const register = async (
     name: string,
     email: string,
     password: string,
-    phone?: string
+    phone?: string,
+    address?: string,
+    dateOfBirth?: string
   ): Promise<boolean> => {
     setIsLoading(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      const response = await AuthService.register({
+        email,
+        password,
+        name,
+        phone,
+        role: "patient", // Always patient for signup page
+        address,
+        dateOfBirth,
+      });
 
-    const newUser: User = {
-      id: Date.now().toString(),
-      name,
-      email,
-      phone,
-      appointments: [],
-    };
+      if (response.success) {
+        // Registration successful - user needs to verify email
+        // Don't log them in automatically, just return success
+        setIsLoading(false);
+        return true;
+      }
 
-    setUser(newUser);
-    localStorage.setItem("user", JSON.stringify(newUser));
-    setIsLoading(false);
-    return true;
+      setIsLoading(false);
+      return false;
+    } catch (error) {
+      ErrorHandler.logError(error, "AuthContext.register");
+      setIsLoading(false);
+      return false;
+    }
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("user");
+  /**
+   * Logout user
+   */
+  const logout = async () => {
+    try {
+      // Call logout endpoint to invalidate tokens on server
+      await AuthService.logout();
+    } catch (error) {
+      // Continue with logout even if API call fails
+      ErrorHandler.logError(error, "AuthContext.logout");
+    } finally {
+      // Clear local state and tokens
+      setUser(null);
+      TokenManager.clearTokens();
+    }
   };
 
+  /**
+   * Update user profile
+   */
   const updateProfile = async (userData: Partial<User>): Promise<boolean> => {
     if (!user) return false;
 
     setIsLoading(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    try {
+      const response = await AuthService.updateProfile(userData);
 
-    const updatedUser = { ...user, ...userData };
-    setUser(updatedUser);
-    localStorage.setItem("user", JSON.stringify(updatedUser));
-    setIsLoading(false);
-    return true;
+      if (response.success && response.data) {
+        const updatedUser: User = {
+          ...user,
+          ...response.data,
+          appointments: user.appointments, // Preserve appointments
+        };
+
+        setUser(updatedUser);
+        setIsLoading(false);
+        return true;
+      }
+
+      setIsLoading(false);
+      return false;
+    } catch (error) {
+      ErrorHandler.logError(error, "AuthContext.updateProfile");
+      setIsLoading(false);
+      return false;
+    }
   };
 
-  // Check for existing user session on mount
-  useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch (error) {
-        console.error("Error parsing saved user:", error);
-        localStorage.removeItem("user");
-      }
+  /**
+   * Validate and restore user session on app start
+   */
+  const initializeAuth = async () => {
+    const token = TokenManager.getToken();
+
+    if (!token) {
+      setIsLoading(false);
+      return;
     }
-    setIsLoading(false);
+
+    try {
+      // Validate token and get user data
+      const response = await AuthService.validateToken();
+
+      if (response.success && response.data?.valid && response.data.user) {
+        const userData = response.data.user;
+        const localUser: User = {
+          id: userData.id,
+          name: userData.name,
+          email: userData.email,
+          phone: userData.phone,
+          role: userData.role,
+          isEmailVerified: userData.isEmailVerified ?? false,
+          createdAt: userData.createdAt ?? new Date().toISOString(),
+          updatedAt: userData.updatedAt ?? new Date().toISOString(),
+          appointments: [],
+        };
+
+        setUser(localUser);
+      } else {
+        // Invalid token, clear storage
+        TokenManager.clearTokens();
+      }
+    } catch (error) {
+      // Token validation failed, clear storage
+      ErrorHandler.logError(error, "AuthContext.initializeAuth");
+      TokenManager.clearTokens();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Initialize authentication on mount
+  useEffect(() => {
+    initializeAuth();
   }, []);
 
   const value: AuthContextType = {

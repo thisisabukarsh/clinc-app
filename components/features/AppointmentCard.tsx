@@ -30,32 +30,6 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
   const isCompleted = appointment.status === "completed";
   const isCancelled = appointment.status === "cancelled";
 
-  const getStatusColor = () => {
-    switch (appointment.status) {
-      case "upcoming":
-        return "bg-blue-100 text-blue-800";
-      case "completed":
-        return "bg-green-100 text-green-800";
-      case "cancelled":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const getStatusText = () => {
-    switch (appointment.status) {
-      case "upcoming":
-        return "موعد قادم";
-      case "completed":
-        return "مكتمل";
-      case "cancelled":
-        return "ملغي";
-      default:
-        return "غير محدد";
-    }
-  };
-
   return (
     <Card className={`p-3 px-4 bg-blue-50 border-blue-100 ${className}`}>
       <div className="flex justify-between items-center" dir="ltr">
@@ -128,13 +102,6 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
             </h3>
             {/* <p className="text-sm text-gray-600">طبيب متخصص</p> */}
           </div>
-
-          {/* Status Badge */}
-          {/* <span
-            className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor()}`}
-          >
-            {getStatusText()}
-          </span> */}
 
           {/* Appointment Details */}
           <div className="grid grid-cols-2 ">

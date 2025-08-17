@@ -7,14 +7,10 @@ import { NAVIGATION_ITEMS, APP_CONFIG } from "@/lib/constants";
 import { useAuth } from "@/lib/contexts/AuthContext";
 import Button from "@/components/ui/Button";
 import Logo from "@/components/ui/Logo";
-import LoginModal from "@/components/features/LoginModal";
-import RegisterModal from "@/components/features/RegisterModal";
 
 const Header: React.FC = () => {
   const pathname = usePathname();
   const { user, logout } = useAuth();
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
   // Check if we're on the homepage
@@ -34,16 +30,6 @@ const Header: React.FC = () => {
       setIsScrolled(true);
     }
   }, [isHomePage]);
-
-  const handleSwitchToRegister = () => {
-    setIsLoginModalOpen(false);
-    setIsRegisterModalOpen(true);
-  };
-
-  const handleSwitchToLogin = () => {
-    setIsRegisterModalOpen(false);
-    setIsLoginModalOpen(true);
-  };
 
   return (
     <header
@@ -120,39 +106,27 @@ const Header: React.FC = () => {
               </>
             ) : (
               <>
-                <button
-                  onClick={() => setIsLoginModalOpen(true)}
+                <Link
+                  href="/login"
                   className={`text-gray-600 hover:text-primary-600 transition-colors duration-200 text-sm font-medium ${
                     isScrolled ? "text-gray-900" : "text-white"
                   }`}
                 >
                   تسجيل دخول
-                </button>
-                <Button
-                  onClick={() => setIsRegisterModalOpen(true)}
-                  className={`bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
+                </Link>
+                <Link
+                  href="/signup"
+                  className={`bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors duration-200 inline-block ${
                     isScrolled ? "text-white" : "text-white"
                   }`}
                 >
                   إنشاء حساب
-                </Button>
+                </Link>
               </>
             )}
           </div>
         </div>
       </div>
-
-      {/* Authentication Modals */}
-      <LoginModal
-        isOpen={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
-        onSwitchToRegister={handleSwitchToRegister}
-      />
-      <RegisterModal
-        isOpen={isRegisterModalOpen}
-        onClose={() => setIsRegisterModalOpen(false)}
-        onSwitchToLogin={handleSwitchToLogin}
-      />
     </header>
   );
 };

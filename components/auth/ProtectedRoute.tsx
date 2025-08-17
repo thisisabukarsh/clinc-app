@@ -7,13 +7,11 @@ import { useAuth } from "@/lib/contexts/AuthContext";
 interface ProtectedRouteProps {
   children: React.ReactNode;
   redirectTo?: string;
-  showLoginModal?: boolean;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
-  redirectTo = "/",
-  showLoginModal = false,
+  redirectTo = "/login",
 }) => {
   const { user, isLoading } = useAuth();
   const router = useRouter();
@@ -22,17 +20,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   useEffect(() => {
     if (!isLoading) {
       if (!user) {
-        if (showLoginModal) {
-          // TODO: Show login modal
-          console.log("Show login modal");
-        } else {
-          router.push(redirectTo);
-        }
+        router.push(redirectTo);
       } else {
         setShouldRender(true);
       }
     }
-  }, [user, isLoading, router, redirectTo, showLoginModal]);
+  }, [user, isLoading, router, redirectTo]);
 
   // Show loading spinner while checking authentication
   if (isLoading) {
@@ -58,12 +51,20 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
           <p className="text-gray-600 mb-6">
             يجب تسجيل الدخول للوصول إلى هذه الصفحة
           </p>
-          <button
-            onClick={() => router.push("/")}
-            className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors"
-          >
-            العودة للصفحة الرئيسية
-          </button>
+          <div className="flex gap-4 justify-center">
+            <button
+              onClick={() => router.push("/login")}
+              className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors"
+            >
+              تسجيل الدخول
+            </button>
+            <button
+              onClick={() => router.push("/")}
+              className="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors"
+            >
+              العودة للصفحة الرئيسية
+            </button>
+          </div>
         </div>
       </div>
     );

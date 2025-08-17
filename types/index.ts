@@ -49,6 +49,10 @@ export interface User {
   name: string;
   email: string;
   phone?: string;
+  role: "patient" | "doctor" | "admin";
+  isEmailVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
   appointments: Appointment[];
 }
 
