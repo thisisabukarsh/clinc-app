@@ -114,7 +114,7 @@ export default function DoctorsPage() {
             </h2>
 
             {/* Sort Options */}
-            <div className="flex items-center space-x-4 space-x-reverse">
+            {/* <div className="flex items-center space-x-4 space-x-reverse">
               <span className="text-sm text-gray-600"> ترتيب حسب : </span>
               &nbsp; &nbsp;
               <select className="text-sm border border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-primary-500">
@@ -122,7 +122,7 @@ export default function DoctorsPage() {
                 <option>السعر الأقل</option>
                 <option>السعر الأعلى</option>
               </select>
-            </div>
+            </div> */}
           </div>
 
           {/* Error State */}
