@@ -4,16 +4,16 @@ import { AdvancedSearchBar } from "@/components/features/AdvancedSearchBar";
 
 interface SearchSectionProps {
   className?: string;
-  onSearch?: (specialty: string, location: string, query: string) => void;
+  onSearch: (query: string, specialty: string, location: string) => void;
 }
 
 export const SearchSection: React.FC<SearchSectionProps> = ({
   className = "",
-  // onSearch,
+  onSearch,
 }) => {
-  const handleSearch = (specialty: string, location: string, query: string) => {
-    console.log("Search initiated:", { specialty, location, query });
-    // onSearch?.(specialty, location, query);
+  const handleSearch = (query: string, specialty: string, location: string) => {
+    // Pass through to parent's onSearch function
+    onSearch(query, specialty, location);
   };
 
   return (
@@ -21,7 +21,7 @@ export const SearchSection: React.FC<SearchSectionProps> = ({
       <div className="container mx-auto px-4">
         <SectionHeader
           title="ابحث عن طبيبك المفضل"
-          subtitle="اختر التخصص والمدينة للعثور على أفضل الأطباء"
+          subtitle="اختر التخصص والمدينة للعثور على أفضل الأطباء، أو اختر 'عرض الكل' لعرض جميع الأطباء"
           titleClassName="text-3xl font-bold text-gray-800 mb-4"
           subtitleClassName="text-lg text-gray-600 mb-8"
         />
@@ -29,8 +29,8 @@ export const SearchSection: React.FC<SearchSectionProps> = ({
         <div className="max-w-6xl mx-auto">
           <AdvancedSearchBar
             onSearch={handleSearch}
-            initialSpecialty="اسنان"
-            initialLocation="عمان"
+            initialSpecialty=""
+            initialLocation=""
           />
         </div>
       </div>

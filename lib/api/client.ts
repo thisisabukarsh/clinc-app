@@ -101,12 +101,12 @@ apiClient.interceptors.response.use(
       );
     }
 
-    // Handle 401 Unauthorized - Clear tokens and redirect to login
+    // Handle 401 Unauthorized - Clear tokens but don't redirect immediately
+    // Let the calling component handle the redirect
     if (error.response?.status === 401) {
       TokenManager.clearTokens();
-      if (typeof window !== "undefined") {
-        window.location.href = "/login";
-      }
+      // Don't redirect here - let the component handle it
+      // This prevents infinite redirects and gives better UX
     }
 
     // Transform error to our standard format

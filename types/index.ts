@@ -84,6 +84,52 @@ export interface SearchFilters {
   };
 }
 
+// API Doctor Search Types
+export interface DoctorSearchParams {
+  specialty?: string;
+  location?: string;
+  clinicType?: string;
+  name?: string;
+}
+
+export interface DoctorUser {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+}
+
+export interface ClinicInfo {
+  name: string;
+  address: string;
+  phone: string;
+  description: string;
+  images: string[];
+  status: "approved" | "pending" | "rejected";
+}
+
+export interface APIDoctor {
+  _id: string;
+  userId: DoctorUser | null; // Can be null based on backend data
+  specialty: string;
+  location: string;
+  fee: number;
+  photo?: string; // Optional since some doctors might not have photos
+  clinic?: ClinicInfo; // Optional since some doctors might not have clinic info
+  // Additional properties that backend returns
+  rating?: number;
+  biography?: string;
+  experience?: string;
+  education?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface DoctorSearchResponse {
+  success: boolean;
+  data: APIDoctor[];
+}
+
 // UI Component types
 export interface ButtonProps {
   children: React.ReactNode;

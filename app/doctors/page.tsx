@@ -1,56 +1,103 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import MainLayout from "@/components/layout/MainLayout";
-import { mockDoctors } from "@/lib/mockData";
-import { Doctor } from "@/types";
 import { SearchSection } from "@/components/doctors/SearchSection";
 import { TopRatedDoctorCard } from "@/components/features/TopRatedDoctorCard";
 import { useRouter } from "next/navigation";
+import { useDoctorSearch } from "@/lib/hooks/useDoctorSearch";
+import { DoctorSearchParams, APIDoctor } from "@/types";
 
 export default function DoctorsPage() {
   const router = useRouter();
-  const [doctors] = useState<Doctor[]>(mockDoctors);
-  const [filteredDoctors, setFilteredDoctors] = useState<Doctor[]>(mockDoctors);
-  const [loading, setLoading] = useState(false);
+  const { doctors, isLoading, error, searchDoctors } = useDoctorSearch();
+
+  // Load initial doctors on component mount
+  useEffect(() => {
+    searchDoctors({});
+  }, [searchDoctors]);
 
   const handleSearch = (query: string, specialty: string, location: string) => {
-    setLoading(true);
+    const params: DoctorSearchParams = {};
 
-    // Simulate API call delay
-    setTimeout(() => {
-      let filtered = doctors;
+    if (query) params.name = query;
+    if (specialty) params.specialty = specialty;
+    if (location) params.location = location;
 
-      // Filter by search query
-      if (query) {
-        filtered = filtered.filter(
-          (doctor) =>
-            doctor.name.toLowerCase().includes(query.toLowerCase()) ||
-            doctor.specialty.toLowerCase().includes(query.toLowerCase()) ||
-            doctor.clinic.toLowerCase().includes(query.toLowerCase())
-        );
-      }
-
-      // Filter by specialty
-      if (specialty && specialty !== "اسنان") {
-        filtered = filtered.filter((doctor) => doctor.specialty === specialty);
-      }
-
-      // Filter by location
-      if (location && location !== "عمان") {
-        filtered = filtered.filter((doctor) => doctor.location === location);
-      }
-
-      setFilteredDoctors(filtered);
-      setLoading(false);
-    }, 500);
+    console.log("Search params:", params); // Debug log
+    searchDoctors(params);
   };
 
   const handleBookAppointment = (doctorId: string) => {
-    // TODO: Navigate to booking page or open booking modal
-    // console.log("Booking appointment for doctor:", doctorId);
     router.push(`/doctors/${doctorId}`);
   };
+
+  // Transform API doctor to match the component's expected format
+  const transformDoctor = (apiDoctor: APIDoctor) => {
+    // Debug: Log what we actually receive
+    console.log("🔍 Transforming doctor:", apiDoctor);
+
+    // Safety check: Ensure we have valid data
+    if (!apiDoctor) {
+      console.error("❌ Invalid doctor data:", apiDoctor);
+      return null;
+    }
+
+    // Handle different data structures from backend
+    let doctorName = "";
+    let doctorSpecialty = "";
+    let doctorFee = 0;
+    let doctorLocation = "";
+
+    let doctorPhoto = "/doctor.png"; // Default fallback image
+    let clinicName = "";
+
+    // Structure 1: Has userId object
+    if (apiDoctor.userId && apiDoctor.userId.name) {
+      doctorName = apiDoctor.userId.name;
+      doctorSpecialty = apiDoctor.specialty || "";
+      doctorFee = apiDoctor.fee || 0;
+      doctorLocation = apiDoctor.location || "";
+      doctorPhoto = apiDoctor.photo || "/doctor.png"; // Use fallback if no photo
+      clinicName = apiDoctor.clinic?.name || "عيادة خاصة";
+    }
+    // Structure 2: Has clinic object but no userId
+    else if (apiDoctor.clinic && apiDoctor.clinic.name) {
+      doctorName = apiDoctor.userId?.name || "دكتور";
+      doctorSpecialty = apiDoctor.specialty || "";
+      doctorFee = apiDoctor.fee || 0;
+      doctorLocation = apiDoctor.location || "";
+      doctorPhoto = apiDoctor.photo || "/doctor.png"; // Use fallback if no photo
+      clinicName = apiDoctor.clinic.name;
+    }
+    // Invalid structure
+    else {
+      console.error("❌ Invalid doctor data structure:", apiDoctor);
+      return null;
+    }
+
+    return {
+      id: apiDoctor._id,
+      name: doctorName,
+      specialty: doctorSpecialty,
+      rating: apiDoctor.rating || 4.5, // Use actual rating if available
+      price: doctorFee,
+      currency: "د.ك", // Kuwaiti Dinar
+      image: doctorPhoto,
+      clinic: clinicName,
+      location: doctorLocation,
+      biography: apiDoctor.biography || "",
+      experience: apiDoctor.experience || "",
+      education: apiDoctor.education || "",
+    };
+  };
+
+  const transformedDoctors = doctors
+    .map(transformDoctor)
+    .filter(
+      (doctor): doctor is NonNullable<ReturnType<typeof transformDoctor>> =>
+        doctor !== null
+    ); // Remove null values
 
   return (
     <MainLayout>
@@ -63,7 +110,7 @@ export default function DoctorsPage() {
           {/* Results Header */}
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold text-gray-900">
-              النتائج ({filteredDoctors.length} طبيب)
+              النتائج ({transformedDoctors.length} طبيب)
             </h2>
 
             {/* Sort Options */}
@@ -78,8 +125,19 @@ export default function DoctorsPage() {
             </div>
           </div>
 
+          {/* Error State */}
+          {error && (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">⚠️</div>
+              <h3 className="text-xl font-semibold text-red-600 mb-2">
+                حدث خطأ في البحث
+              </h3>
+              <p className="text-gray-600">{error}</p>
+            </div>
+          )}
+
           {/* Loading State */}
-          {loading && (
+          {isLoading && (
             <div className="text-center py-12">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
               <p className="mt-2 text-gray-600">جاري البحث...</p>
@@ -87,9 +145,9 @@ export default function DoctorsPage() {
           )}
 
           {/* Doctors Grid */}
-          {!loading && (
+          {!isLoading && !error && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-              {filteredDoctors.map((doctor) => (
+              {transformedDoctors.map((doctor) => (
                 <TopRatedDoctorCard
                   key={doctor.id}
                   doctor={doctor}
@@ -101,7 +159,7 @@ export default function DoctorsPage() {
           )}
 
           {/* No Results */}
-          {!loading && filteredDoctors.length === 0 && (
+          {!isLoading && !error && transformedDoctors.length === 0 && (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">🔍</div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
