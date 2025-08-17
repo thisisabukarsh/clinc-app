@@ -127,7 +127,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    */
   const logout = async () => {
     try {
-      // Call logout endpoint to invalidate tokens on server
+      // Since backend doesn't have logout endpoint, handle locally
       await AuthService.logout();
     } catch (error) {
       // Continue with logout even if API call fails

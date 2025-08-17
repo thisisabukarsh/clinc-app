@@ -10,7 +10,11 @@ import {
   ResendEmailOTPResponse,
   RefreshTokenRequest,
   ForgotPasswordRequest,
+  ForgotPasswordResponse,
+  VerifyPasswordResetOTPRequest,
+  VerifyPasswordResetOTPResponse,
   ResetPasswordRequest,
+  ResetPasswordResponse,
   ChangePasswordRequest,
   ApiResponse,
 } from "@/types/api";
@@ -99,8 +103,13 @@ class AuthService {
    */
   static async logout(): Promise<ApiResponse<null>> {
     try {
-      const response = await ApiHelper.post<null>(`${this.BASE_PATH}/logout`);
-      return response;
+      // Since backend doesn't have logout endpoint, handle locally
+      // Clear tokens and return success
+      return {
+        success: true,
+        data: null,
+        message: "Logged out successfully",
+      };
     } catch (error) {
       console.error("Logout error:", error);
       throw error;
@@ -181,13 +190,13 @@ class AuthService {
    */
   static async forgotPassword(
     request: ForgotPasswordRequest
-  ): Promise<ApiResponse<null>> {
+  ): Promise<ForgotPasswordResponse> {
     try {
-      const response = await ApiHelper.post<null>(
+      const response = await ApiHelper.post<ForgotPasswordResponse>(
         `${this.BASE_PATH}/forgot-password`,
         request
       );
-      return response;
+      return response.data || (response as ForgotPasswordResponse);
     } catch (error) {
       console.error("Forgot password error:", error);
       throw error;
@@ -195,17 +204,35 @@ class AuthService {
   }
 
   /**
-   * Reset password with token
+   * Verify password reset OTP
+   */
+  static async verifyPasswordResetOTP(
+    request: VerifyPasswordResetOTPRequest
+  ): Promise<VerifyPasswordResetOTPResponse> {
+    try {
+      const response = await ApiHelper.post<VerifyPasswordResetOTPResponse>(
+        `${this.BASE_PATH}/verify-password-reset-otp`,
+        request
+      );
+      return response.data || (response as VerifyPasswordResetOTPResponse);
+    } catch (error) {
+      console.error("Verify password reset OTP error:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Reset password with OTP
    */
   static async resetPassword(
     request: ResetPasswordRequest
-  ): Promise<ApiResponse<null>> {
+  ): Promise<ResetPasswordResponse> {
     try {
-      const response = await ApiHelper.post<null>(
+      const response = await ApiHelper.post<ResetPasswordResponse>(
         `${this.BASE_PATH}/reset-password`,
         request
       );
-      return response;
+      return response.data || (response as ResetPasswordResponse);
     } catch (error) {
       console.error("Reset password error:", error);
       throw error;

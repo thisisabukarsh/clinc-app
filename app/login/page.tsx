@@ -100,10 +100,10 @@ const LoginPage: React.FC = () => {
               </h4>
               <div className="text-sm text-blue-700 space-y-1">
                 <p>
-                  <strong>البريد:</strong> patient@example.com
+                  <strong>البريد:</strong> test@test.com
                 </p>
                 <p>
-                  <strong>كلمة المرور:</strong> password
+                  <strong>كلمة المرور:</strong> test11
                 </p>
               </div>
             </div>
@@ -169,12 +169,12 @@ const LoginPage: React.FC = () => {
 
             {/* Forgot Password */}
             <div className="text-right">
-              <button
-                type="button"
+              <Link
+                href="/forgot-password"
                 className="text-sm text-blue-600 hover:text-blue-700"
               >
                 نسيت كلمة المرور؟
-              </button>
+              </Link>
             </div>
 
             {/* Login Button */}

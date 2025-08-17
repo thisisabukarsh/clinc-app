@@ -85,10 +85,32 @@ export interface ForgotPasswordRequest {
   email: string;
 }
 
+export interface ForgotPasswordResponse {
+  success: boolean;
+  message: string;
+  userId: string;
+}
+
+export interface VerifyPasswordResetOTPRequest {
+  userId: string;
+  otp: string;
+}
+
+export interface VerifyPasswordResetOTPResponse {
+  success: boolean;
+  message: string;
+  canResetPassword: boolean;
+}
+
 export interface ResetPasswordRequest {
-  token: string;
-  password: string;
-  confirmPassword: string;
+  userId: string;
+  otp: string;
+  newPassword: string;
+}
+
+export interface ResetPasswordResponse {
+  success: boolean;
+  message: string;
 }
 
 export interface ChangePasswordRequest {
