@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Doctor } from "@/types";
 import { formatCurrency } from "@/lib/utils";
-import { generateMockTimeSlots } from "@/lib/mockData";
+import { useAppointmentBooking } from "@/lib/hooks/useAppointmentBooking";
 import Calendar from "@/components/ui/Calendar";
 import TimeSlots from "@/components/ui/TimeSlots";
 import Button from "@/components/ui/Button";
@@ -35,10 +35,35 @@ export const AppointmentBooking: React.FC<AppointmentBookingProps> = ({
 }) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTime, setSelectedTime] = useState<string>("");
-  const [timeSlots, setTimeSlots] = useState<
-    { time: string; available: boolean; price: number }[]
-  >([]);
-  const [loading, setLoading] = useState(false);
+
+  const {
+    timeSlots,
+    loading,
+    error,
+    fetchSchedule,
+    bookAppointmentSlot,
+    retryFetchSchedule,
+  } = useAppointmentBooking({
+    doctorId: doctor.id,
+    doctorPrice: doctor.price,
+    onSuccess: () => {
+      if (onBookingConfirm) {
+        const selectedSlot = timeSlots.find(
+          (slot) => slot.time === selectedTime
+        );
+        const bookingDetails: BookingDetails = {
+          doctorId: doctor.id,
+          doctorName: doctor.name,
+          date: selectedDate!,
+          time: selectedTime,
+          price: selectedSlot?.price || doctor.price,
+          clinic: doctor.clinic,
+          location: doctor.location,
+        };
+        onBookingConfirm(bookingDetails);
+      }
+    },
+  });
 
   // Additional fees (can be made configurable)
   const additionalFees = 2;
@@ -46,15 +71,9 @@ export const AppointmentBooking: React.FC<AppointmentBookingProps> = ({
 
   useEffect(() => {
     if (selectedDate) {
-      setLoading(true);
-      // Simulate API call to get available time slots
-      setTimeout(() => {
-        const slots = generateMockTimeSlots(selectedDate);
-        setTimeSlots(slots);
-        setLoading(false);
-      }, 500);
+      fetchSchedule(selectedDate);
     }
-  }, [selectedDate]);
+  }, [selectedDate, fetchSchedule]);
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
@@ -65,19 +84,14 @@ export const AppointmentBooking: React.FC<AppointmentBookingProps> = ({
     setSelectedTime(time);
   };
 
-  const handleConfirmBooking = () => {
-    if (selectedDate && selectedTime && onBookingConfirm) {
-      const selectedSlot = timeSlots.find((slot) => slot.time === selectedTime);
-      const bookingDetails: BookingDetails = {
-        doctorId: doctor.id,
-        doctorName: doctor.name,
-        date: selectedDate,
-        time: selectedTime,
-        price: selectedSlot?.price || doctor.price,
-        clinic: doctor.clinic,
-        location: doctor.location,
-      };
-      onBookingConfirm(bookingDetails);
+  const handleConfirmBooking = async () => {
+    if (!selectedDate || !selectedTime) return;
+
+    try {
+      await bookAppointmentSlot(selectedDate, selectedTime);
+    } catch (error: unknown) {
+      console.error("Failed to book appointment:", error);
+      // Error handling is already done in the hook
     }
   };
 
@@ -121,6 +135,21 @@ export const AppointmentBooking: React.FC<AppointmentBookingProps> = ({
                 جاري تحميل المواعيد المتاحة...
               </p>
             </div>
+          ) : error ? (
+            <div className="text-center py-8">
+              <div className="text-red-600 mb-2">⚠️</div>
+              <p className="text-red-600 mb-2">{error}</p>
+              <button
+                onClick={() => {
+                  if (selectedDate) {
+                    retryFetchSchedule(selectedDate);
+                  }
+                }}
+                className="text-blue-600 hover:text-blue-800 underline"
+              >
+                إعادة المحاولة
+              </button>
+            </div>
           ) : (
             <TimeSlots
               timeSlots={timeSlots}
@@ -163,11 +192,18 @@ export const AppointmentBooking: React.FC<AppointmentBookingProps> = ({
         <div className="flex flex-col sm:flex-row gap-3">
           <Button
             onClick={handleConfirmBooking}
-            disabled={isBookingDisabled}
+            disabled={isBookingDisabled || loading}
             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed"
             variant="primary"
           >
-            حجز موعد
+            {loading ? (
+              <div className="flex items-center justify-center">
+                <div className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                جاري الحجز...
+              </div>
+            ) : (
+              "حجز موعد"
+            )}
           </Button>
 
           {showCancelButton && onCancel && (

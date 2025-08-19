@@ -147,9 +147,9 @@ export default function DoctorsPage() {
           {/* Doctors Grid */}
           {!isLoading && !error && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-              {transformedDoctors.map((doctor) => (
+              {transformedDoctors.map((doctor, index) => (
                 <TopRatedDoctorCard
-                  key={doctor.id}
+                  key={index}
                   doctor={doctor}
                   onClick={() => handleBookAppointment(doctor.id)}
                   onBookAppointment={handleBookAppointment}
