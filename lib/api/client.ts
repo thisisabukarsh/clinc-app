@@ -17,6 +17,13 @@ const API_CONFIG = {
   },
 };
 
+// Debug log the API configuration
+console.log("🔧 API Configuration:", {
+  baseURL: env.API_BASE_URL,
+  timeout: env.API_TIMEOUT,
+  NODE_ENV: process.env.NODE_ENV,
+});
+
 // Create axios instance
 const apiClient: AxiosInstance = axios.create(API_CONFIG);
 
@@ -55,6 +62,8 @@ apiClient.interceptors.request.use(
         {
           data: config.data,
           params: config.params,
+          headers: config.headers,
+          token: token ? "Present" : "Missing",
         }
       );
     }
@@ -97,6 +106,7 @@ apiClient.interceptors.response.use(
         {
           status: error.response?.status,
           data: error.response?.data,
+          message: error.message,
         }
       );
     }

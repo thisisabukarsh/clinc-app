@@ -2,7 +2,8 @@
 
 import React, { useState, useMemo } from "react";
 import { Appointment } from "@/types";
-import { mockAppointments } from "@/lib/mockData";
+import { usePatientAppointments } from "@/lib/hooks";
+import { transformAppointmentData } from "@/lib/api/services";
 import MainLayout from "@/components/layout/MainLayout";
 import AppointmentCard from "@/components/features/AppointmentCard";
 import MedicalFileModal from "@/components/features/MedicalFileModal";
@@ -22,20 +23,28 @@ export default function AppointmentsPage() {
   const [selectedAppointment, setSelectedAppointment] =
     useState<Appointment | null>(null);
 
+  const {
+    appointments,
+    loading,
+    error,
+    cancelAppointmentById,
+    refreshAppointments,
+  } = usePatientAppointments();
+
   const filteredAppointments = useMemo(() => {
     const now = new Date();
     if (activeTab === "upcoming") {
-      return mockAppointments.filter((appointment) => {
-        const appointmentDate = new Date(appointment.date);
-        return appointmentDate >= now && appointment.status === "upcoming";
+      return appointments.filter((appointment) => {
+        const appointmentDate = new Date(appointment.appointmentDate);
+        return appointmentDate >= now && appointment.status === "confirmed";
       });
     } else {
-      return mockAppointments.filter((appointment) => {
-        const appointmentDate = new Date(appointment.date);
-        return appointmentDate < now || appointment.status !== "upcoming";
+      return appointments.filter((appointment) => {
+        const appointmentDate = new Date(appointment.appointmentDate);
+        return appointmentDate < now || appointment.status !== "confirmed";
       });
     }
-  }, [activeTab]);
+  }, [activeTab, appointments]);
 
   const handleViewMedicalFile = (appointment: Appointment) => {
     setSelectedAppointment(appointment);
@@ -48,17 +57,19 @@ export default function AppointmentsPage() {
   };
 
   const handleCancel = (appointmentId: string) => {
-    const appointment = mockAppointments.find((a) => a.id === appointmentId);
+    const appointment = appointments.find((a) => a._id === appointmentId);
     if (appointment) {
-      setSelectedAppointment(appointment);
+      const transformedAppointment = transformAppointmentData(appointment);
+      setSelectedAppointment(transformedAppointment);
       setIsCancelAppointmentModalOpen(true);
     }
   };
 
   const handleLeaveReview = (appointmentId: string) => {
-    const appointment = mockAppointments.find((a) => a.id === appointmentId);
+    const appointment = appointments.find((a) => a._id === appointmentId);
     if (appointment) {
-      setSelectedAppointment(appointment);
+      const transformedAppointment = transformAppointmentData(appointment);
+      setSelectedAppointment(transformedAppointment);
       setIsAddReviewModalOpen(true);
     }
   };
@@ -68,10 +79,20 @@ export default function AppointmentsPage() {
     setIsEditAppointmentModalOpen(true);
   };
 
-  const handleCancelConfirm = async (appointmentId: string, reason: string) => {
-    console.log("Cancelling appointment:", appointmentId, "Reason:", reason);
-    // TODO: Implement actual cancellation logic
-    // Update appointment status in database
+  const handleCancelConfirm = async (
+    appointmentId: string,
+    _reason: string
+  ) => {
+    try {
+      await cancelAppointmentById(appointmentId);
+      setIsCancelAppointmentModalOpen(false);
+      setSelectedAppointment(null);
+      // Refresh appointments to get updated list
+      refreshAppointments();
+    } catch (error) {
+      console.error("Failed to cancel appointment:", error);
+      // Error handling is already done in the hook
+    }
   };
 
   const handleReviewSubmit = (reviewData: {
@@ -139,19 +160,30 @@ export default function AppointmentsPage() {
 
           {/* Appointments List */}
           <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {filteredAppointments.length > 0 ? (
+            {loading ? (
+              <div className="text-center py-12">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <p className="mt-2 text-gray-600">جاري تحميل المواعيد...</p>
+              </div>
+            ) : error ? (
+              <div className="text-center py-12">{error}</div>
+            ) : filteredAppointments.length > 0 ? (
               <div className="space-y-4">
-                {filteredAppointments.map((appointment) => (
-                  <AppointmentCard
-                    key={appointment.id}
-                    appointment={appointment}
-                    onViewMedicalFile={handleViewMedicalFile}
-                    onReschedule={handleReschedule}
-                    onCancel={handleCancel}
-                    onLeaveReview={handleLeaveReview}
-                    onEdit={handleEdit}
-                  />
-                ))}
+                {filteredAppointments.map((appointment) => {
+                  const transformedAppointment =
+                    transformAppointmentData(appointment);
+                  return (
+                    <AppointmentCard
+                      key={appointment._id}
+                      appointment={transformedAppointment}
+                      onViewMedicalFile={handleViewMedicalFile}
+                      onReschedule={handleReschedule}
+                      onCancel={handleCancel}
+                      onLeaveReview={handleLeaveReview}
+                      onEdit={handleEdit}
+                    />
+                  );
+                })}
               </div>
             ) : (
               /* Empty State */
