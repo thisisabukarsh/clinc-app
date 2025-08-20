@@ -78,7 +78,7 @@ const Footer: React.FC = () => {
             {/* روابط مهمة */}
             <div className="text-right">
               <h3 className="text-lg font-semibold mb-6 text-white">
-                روابط مهمة
+                روابط مهمة<span></span>
               </h3>
               <ul className="space-y-3">
                 <li>
