@@ -6,6 +6,7 @@ import Link from "next/link";
 import { X, ArrowLeft } from "lucide-react";
 import Heart from "@/components/svgs/Heart";
 import AuthService from "@/lib/api/services/auth";
+import OTPDisplay from "@/components/auth/OTPDisplay";
 
 function ResetPasswordOTPContent() {
   const router = useRouter();
@@ -17,13 +18,25 @@ function ResetPasswordOTPContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [resendMessage, setResendMessage] = useState("");
+  const [devOTP, setDevOTP] = useState<string>("");
+  const [devMessage, setDevMessage] = useState<string>("");
 
-  // Redirect if no userId
+  // Redirect if no userId and check for dev OTP from forgot password
   useEffect(() => {
     if (!userId) {
       router.push("/forgot-password");
+    } else {
+      // Check if there's a dev OTP in the URL params (from forgot password)
+      const otpFromParams = searchParams.get("devOTP");
+      const devMsgFromParams = searchParams.get("devMessage");
+      if (otpFromParams) {
+        setDevOTP(otpFromParams);
+        setDevMessage(
+          devMsgFromParams || "🧪 Development Mode: OTP from forgot password"
+        );
+      }
     }
-  }, [userId, router]);
+  }, [userId, router, searchParams]);
 
   const handleOtpChange = (value: string) => {
     try {
@@ -153,6 +166,9 @@ function ResetPasswordOTPContent() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6" dir="rtl">
+            {/* Development OTP Display */}
+            <OTPDisplay otp={devOTP} devMessage={devMessage} />
+
             {/* OTP Input */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">

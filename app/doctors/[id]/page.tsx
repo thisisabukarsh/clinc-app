@@ -1,14 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
-import { BookOpen } from "lucide-react";
-import { topRatedDoctors, clinicImages } from "@/lib/mockData";
+import { BookOpen, Loader2 } from "lucide-react";
+import { getDoctorDetails, APIDoctor } from "@/lib/api/services";
+import { clinicImages } from "@/lib/mockData";
 import { DoctorProfileHeader } from "@/components/doctor-page";
 import { AppointmentBooking, ClinicImageSlider } from "@/components/features";
-// import Button from "@/components/ui/Button";
 import MainLayout from "@/components/layout/MainLayout";
+import { toast } from "react-hot-toast";
 
 interface BookingDetails {
   doctorId: string;
@@ -20,26 +22,137 @@ interface BookingDetails {
   location: string;
 }
 
+// Transform API doctor data to match existing component expectations
+const transformDoctorData = (apiDoctor: APIDoctor) => {
+  return {
+    id: apiDoctor._id,
+    name: apiDoctor.userId.name,
+    specialty: apiDoctor.specialty,
+    location: apiDoctor.location,
+    fee: apiDoctor.fee,
+    price: apiDoctor.fee, // Same as fee for compatibility
+    currency: "دينار أردني", // Default currency
+    clinic: apiDoctor.clinic?.name || "العيادة",
+    phone: apiDoctor.userId.phone || apiDoctor.clinic?.phone || "",
+    email: apiDoctor.userId.email,
+    image: apiDoctor.photo || "",
+    rating: 4.8, // Default rating - you can add this to your backend later
+    reviewsCount: 25, // Default reviews - you can add this to your backend later
+    // Mock data for fields not yet in API
+    about: `الدكتور ${apiDoctor.userId.name} طبيب متخصص في ${apiDoctor.specialty} مع خبرة واسعة في هذا المجال. يقدم أفضل الخدمات الطبية للمرضى في ${apiDoctor.location}.`,
+    education: "بكالوريوس الطب والجراحة، دراسات عليا في التخصص",
+    experience: "أكثر من 10 سنوات خبرة في المجال الطبي",
+    availability: "السبت - الخميس، 9:00 ص - 9:00 م",
+    consultationTime: "30 دقيقة",
+    languages: ["العربية", "الإنجليزية"],
+  };
+};
+
 export default function DoctorDetailPage() {
   const params = useParams();
   const doctorId = params.id as string;
+  const [doctor, setDoctor] = useState<APIDoctor | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
-  // Find the doctor by ID
-  const doctor = topRatedDoctors.find((d) => d.id === doctorId);
+  useEffect(() => {
+    const fetchDoctorDetails = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const doctorData = await getDoctorDetails(doctorId);
+        setDoctor(doctorData);
+      } catch (err) {
+        console.error("Error fetching doctor details:", err);
 
-  if (!doctor) {
+        let errorMessage = "فشل في تحميل بيانات الطبيب";
+
+        if (err instanceof Error) {
+          if (
+            err.message.includes("404") ||
+            err.message.includes("Doctor not found")
+          ) {
+            errorMessage =
+              "لم يتم العثور على الطبيب المطلوب. قد يكون معرف الطبيب غير صحيح.";
+          } else if (err.message.includes("400")) {
+            errorMessage = "معرف الطبيب غير صالح.";
+          } else if (err.message.includes("500")) {
+            errorMessage = "خطأ في الخادم. يرجى المحاولة لاحقاً.";
+          } else if (
+            err.message.includes("Network") ||
+            err.message.includes("ECONNREFUSED")
+          ) {
+            errorMessage = "مشكلة في الاتصال. تأكد من الاتصال بالإنترنت.";
+          } else {
+            errorMessage = err.message;
+          }
+        }
+
+        setError(errorMessage);
+        toast.error(errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (doctorId) {
+      fetchDoctorDetails();
+    }
+  }, [doctorId]);
+
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            Doctor not found
-          </h1>
-          <p className="text-gray-600">
-            The doctor you&apos;re looking for doesn&apos;t exist.
-          </p>
+      <MainLayout>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center mt-16">
+          <div className="text-center">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-blue-600" />
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              جاري تحميل بيانات الطبيب...
+            </h2>
+            <p className="text-gray-600">يرجى الانتظار</p>
+          </div>
         </div>
-      </div>
+      </MainLayout>
+    );
+  }
+
+  if (error || !doctor) {
+    return (
+      <MainLayout>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center mt-16">
+          <div className="text-center max-w-md mx-auto px-4">
+            <div className="text-6xl mb-6">👨‍⚕️</div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+              لم يتم العثور على الطبيب
+            </h1>
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+              <p className="text-gray-700 text-sm">
+                {error || "الطبيب الذي تبحث عنه غير موجود."}
+              </p>
+            </div>
+            <div className="space-y-3">
+              <p className="text-gray-600 text-sm">
+                يمكنك العثور على أطباء آخرين من خلال:
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Link
+                  href="/doctors"
+                  className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  تصفح جميع الأطباء
+                </Link>
+                <Link
+                  href="/"
+                  className="inline-flex items-center justify-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+                >
+                  العودة للصفحة الرئيسية
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </MainLayout>
     );
   }
 
@@ -69,10 +182,10 @@ export default function DoctorDetailPage() {
                   {/* Doctor Image */}
                   <div className="lg:col-span-1 flex justify-center">
                     <div className="w-64 h-64 bg-gray-200 rounded-3xl flex items-center justify-center overflow-hidden">
-                      {doctor.image ? (
+                      {doctor.photo ? (
                         <Image
-                          src={doctor.image}
-                          alt={doctor.name}
+                          src={doctor.photo}
+                          alt={doctor.userId.name}
                           width={256}
                           height={256}
                           className="w-full h-full object-contain"
@@ -83,7 +196,7 @@ export default function DoctorDetailPage() {
                     </div>
                   </div>
                   {/* Doctor Info */}
-                  <DoctorProfileHeader doctor={doctor} />
+                  <DoctorProfileHeader doctor={transformDoctorData(doctor)} />
                 </div>
 
                 {/* Combined Doctor Information */}
@@ -95,32 +208,51 @@ export default function DoctorDetailPage() {
 
                   {/* Flowing Paragraph Style */}
                   <div className="text-gray-700 leading-relaxed text-lg space-y-4">
-                    <p>{doctor.about}</p>
-
                     <p>
-                      <span className="font-semibold ">المؤهلات العلمية:</span>{" "}
-                      {doctor.education}
+                      الدكتور {doctor.userId.name} طبيب متخصص في{" "}
+                      {doctor.specialty} مع خبرة واسعة في هذا المجال. يقدم أفضل
+                      الخدمات الطبية للمرضى في {doctor.location}.
                     </p>
 
                     <p>
-                      <span className="font-semibold ">الخبرة:</span>{" "}
-                      {doctor.experience}
+                      <span className="font-semibold">التخصص:</span>{" "}
+                      {doctor.specialty}
                     </p>
 
                     <p>
-                      <span className="font-semibold ">الموقع:</span>{" "}
-                      {doctor.clinic} - {doctor.location}
+                      <span className="font-semibold">رسوم الكشف:</span>{" "}
+                      {doctor.fee} دينار أردني
                     </p>
 
                     <p>
-                      <span className="font-semibold ">ساعات العمل:</span>{" "}
-                      {doctor.availability}، ومدة الاستشارة{" "}
-                      {doctor.consultationTime}
+                      <span className="font-semibold">الموقع:</span>{" "}
+                      {doctor.clinic?.name || "العيادة"} - {doctor.location}
                     </p>
 
+                    {doctor.clinic?.address && (
+                      <p>
+                        <span className="font-semibold">عنوان العيادة:</span>{" "}
+                        {doctor.clinic.address}
+                      </p>
+                    )}
+
+                    {doctor.clinic?.description && (
+                      <p>
+                        <span className="font-semibold">وصف العيادة:</span>{" "}
+                        {doctor.clinic.description}
+                      </p>
+                    )}
+
+                    {(doctor.userId.phone || doctor.clinic?.phone) && (
+                      <p>
+                        <span className="font-semibold">الهاتف:</span>{" "}
+                        {doctor.userId.phone || doctor.clinic?.phone}
+                      </p>
+                    )}
+
                     <p>
-                      <span className="font-semibold ">اللغات:</span> يتحدث
-                      الطبيب {doctor.languages.join(" و ")}
+                      <span className="font-semibold">البريد الإلكتروني:</span>{" "}
+                      {doctor.userId.email}
                     </p>
                   </div>
                 </div>
@@ -139,7 +271,7 @@ export default function DoctorDetailPage() {
                   </Button>
                 </div> */}
                 <AppointmentBooking
-                  doctor={doctor}
+                  doctor={transformDoctorData(doctor)}
                   onBookingConfirm={handleBookingConfirm}
                   onCancel={handleCloseBookingModal}
                   showHeader={true}

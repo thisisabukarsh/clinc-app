@@ -1,5 +1,6 @@
 import { ApiHelper } from "../client";
 import { Appointment } from "@/types";
+import type { PatientAppointment } from "./patients";
 
 // Types for appointment scheduling
 export interface DoctorScheduleResponse {
@@ -280,7 +281,7 @@ export const transformScheduleToSlots = (
  * Transform API appointment data to component format
  */
 export const transformAppointmentData = (
-  apiAppointment: PatientAppointmentResponse
+  apiAppointment: PatientAppointmentResponse | PatientAppointment
 ): Appointment => {
   // Map API status to component status
   const mapStatus = (

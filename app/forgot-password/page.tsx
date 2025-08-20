@@ -38,7 +38,16 @@ export default function ForgotPasswordPage() {
         setSuccess("تم إرسال رمز إعادة تعيين كلمة المرور إلى بريدك الإلكتروني");
         // Redirect to password reset OTP page after a short delay
         setTimeout(() => {
-          router.push(`/reset-password-otp?userId=${response.userId}`);
+          let redirectUrl = `/reset-password-otp?userId=${response.userId}`;
+          if (response.otp) {
+            redirectUrl += `&devOTP=${
+              response.otp
+            }&devMessage=${encodeURIComponent(
+              response.devMessage ||
+                "🧪 Development Mode: OTP from forgot password"
+            )}`;
+          }
+          router.push(redirectUrl);
         }, 2000);
       }
     } catch (err: unknown) {

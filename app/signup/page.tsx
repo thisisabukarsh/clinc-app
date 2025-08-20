@@ -122,8 +122,16 @@ const SignupPage: React.FC = () => {
       });
 
       if (response.success && response.userId) {
-        // Redirect to OTP verification page with userId
-        router.push(`/verify-otp?userId=${response.userId}`);
+        // Redirect to OTP verification page with userId and dev OTP if available
+        let redirectUrl = `/verify-otp?userId=${response.userId}`;
+        if (response.otp) {
+          redirectUrl += `&devOTP=${
+            response.otp
+          }&devMessage=${encodeURIComponent(
+            response.devMessage || "🧪 Development Mode: OTP from registration"
+          )}`;
+        }
+        router.push(redirectUrl);
       }
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };

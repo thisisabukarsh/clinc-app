@@ -1,6 +1,9 @@
 import { useState, useCallback } from "react";
-import DoctorService from "@/lib/api/services/doctors";
-import { DoctorSearchParams, APIDoctor } from "@/types";
+import {
+  searchDoctors as searchDoctorsAPI,
+  DoctorSearchParams,
+  APIDoctor,
+} from "@/lib/api/services";
 
 interface UseDoctorSearchReturn {
   doctors: APIDoctor[];
@@ -22,24 +25,15 @@ export const useDoctorSearch = (): UseDoctorSearchReturn => {
     console.log("🔍 Searching doctors with params:", params); // Debug log
 
     try {
-      const response = await DoctorService.searchDoctors(params);
-      console.log("✅ Search response:", response); // Debug log
+      const doctors = await searchDoctorsAPI(params);
+      console.log("✅ Search response:", doctors); // Debug log
       console.log("📊 Response structure:", {
-        hasSuccess: "success" in response,
-        successValue: response.success,
-        hasData: "data" in response,
-        dataType: Array.isArray(response.data) ? "array" : typeof response.data,
-        dataLength: Array.isArray(response.data) ? response.data.length : "N/A",
+        dataType: Array.isArray(doctors) ? "array" : typeof doctors,
+        dataLength: Array.isArray(doctors) ? doctors.length : "N/A",
       });
 
-      if (response.success) {
-        setDoctors(response.data);
-        console.log(`📊 Found ${response.data.length} doctors`); // Debug log
-      } else {
-        console.log("❌ Response success is false:", response);
-        setError("Failed to fetch doctors");
-        setDoctors([]);
-      }
+      setDoctors(doctors);
+      console.log(`📊 Found ${doctors.length} doctors`); // Debug log
     } catch (err) {
       console.error("❌ Search error:", err); // Debug log
       const errorMessage =

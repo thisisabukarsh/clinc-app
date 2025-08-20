@@ -6,6 +6,7 @@ import Link from "next/link";
 import { X } from "lucide-react";
 import Heart from "@/components/svgs/Heart";
 import AuthService from "@/lib/api/services/auth";
+import OTPDisplay from "@/components/auth/OTPDisplay";
 
 function VerifyOTPContent() {
   const router = useRouter();
@@ -17,13 +18,25 @@ function VerifyOTPContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [resendMessage, setResendMessage] = useState("");
+  const [devOTP, setDevOTP] = useState<string>("");
+  const [devMessage, setDevMessage] = useState<string>("");
 
-  // Redirect if no userId
+  // Redirect if no userId and check for dev OTP from registration
   useEffect(() => {
     if (!userId) {
       router.push("/signup");
+    } else {
+      // Check if there's a dev OTP in the URL params (from registration)
+      const otpFromParams = searchParams.get("devOTP");
+      const devMsgFromParams = searchParams.get("devMessage");
+      if (otpFromParams) {
+        setDevOTP(otpFromParams);
+        setDevMessage(
+          devMsgFromParams || "🧪 Development Mode: OTP from registration"
+        );
+      }
     }
-  }, [userId, router]);
+  }, [userId, router, searchParams]);
 
   const handleOtpChange = (value: string) => {
     try {
@@ -102,6 +115,14 @@ function VerifyOTPContent() {
 
       if (response.success) {
         setResendMessage("تم إرسال رمز تحقق جديد إلى بريدك الإلكتروني");
+
+        // Store dev OTP if available (development mode)
+        if (response.otp) {
+          setDevOTP(response.otp);
+          setDevMessage(
+            response.devMessage || "🧪 Development Mode: New OTP generated"
+          );
+        }
       }
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
@@ -158,6 +179,9 @@ function VerifyOTPContent() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6" dir="rtl">
+            {/* Development OTP Display */}
+            <OTPDisplay otp={devOTP} devMessage={devMessage} />
+
             {/* OTP Input */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">

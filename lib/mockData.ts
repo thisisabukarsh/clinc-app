@@ -322,7 +322,7 @@ export const medicalSpecialties = [
 
 export const topRatedDoctors = [
   {
-    id: "68a12c61c243ce20204e6e74",
+    id: "68a41b87a9f90436090f8443",
     name: "د. مي محمد",
     specialty: "اخصائي نسائية",
     rating: 4.8,

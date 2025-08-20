@@ -6,7 +6,7 @@ import { SearchSection } from "@/components/doctors/SearchSection";
 import { TopRatedDoctorCard } from "@/components/features/TopRatedDoctorCard";
 import { useRouter } from "next/navigation";
 import { useDoctorSearch } from "@/lib/hooks/useDoctorSearch";
-import { DoctorSearchParams, APIDoctor } from "@/types";
+import { DoctorSearchParams, APIDoctor } from "@/lib/api/services";
 
 export default function DoctorsPage() {
   const router = useRouter();
@@ -80,15 +80,15 @@ export default function DoctorsPage() {
       id: apiDoctor._id,
       name: doctorName,
       specialty: doctorSpecialty,
-      rating: apiDoctor.rating || 4.5, // Use actual rating if available
+      rating: 4.5, // Default rating - TODO: Add rating system to backend
       price: doctorFee,
       currency: "د.ك", // Kuwaiti Dinar
       image: doctorPhoto,
       clinic: clinicName,
       location: doctorLocation,
-      biography: apiDoctor.biography || "",
-      experience: apiDoctor.experience || "",
-      education: apiDoctor.education || "",
+      biography: "", // TODO: Add biography field to backend
+      experience: "", // TODO: Add experience field to backend
+      education: "", // TODO: Add education field to backend
     };
   };
 

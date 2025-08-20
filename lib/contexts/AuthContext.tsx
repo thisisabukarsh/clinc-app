@@ -181,28 +181,40 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return;
       }
 
-      // SUPER SIMPLE: If token exists, user stays logged in
-      // No API calls that could fail and log user out
       if (user) {
         // Keep existing user data
         setIsLoading(false);
         return;
       }
 
-      // Create minimal user object to keep user logged in
-      // The actual API calls will handle authentication failures
-      const minimalUser: User = {
-        id: "temp-id",
-        name: "User",
-        email: "user@example.com",
-        role: "patient",
-        isEmailVerified: false,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        appointments: [],
-      };
+      try {
+        // Validate token by making a simple API call
+        const response = await AuthService.validateToken();
 
-      setUser(minimalUser);
+        if (response.success && response.data?.valid && response.data.user) {
+          const userData = response.data.user;
+          const localUser: User = {
+            id: userData.id,
+            name: userData.name,
+            email: userData.email,
+            phone: userData.phone,
+            role: userData.role,
+            isEmailVerified: userData.isEmailVerified ?? false,
+            createdAt: userData.createdAt ?? new Date().toISOString(),
+            updatedAt: userData.updatedAt ?? new Date().toISOString(),
+            appointments: [],
+          };
+          setUser(localUser);
+        } else {
+          // Token is invalid, clear it
+          TokenManager.clearTokens();
+        }
+      } catch (error) {
+        // Token validation failed, clear it
+        console.log("Token validation failed:", error);
+        TokenManager.clearTokens();
+      }
+
       setIsLoading(false);
     };
 

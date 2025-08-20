@@ -168,6 +168,36 @@ class ApiHelper {
   }
 
   /**
+   * Make a PUT request with form data
+   */
+  static async putFormData<T>(
+    url: string,
+    formData: FormData
+  ): Promise<ApiResponse<T>> {
+    const response = await apiClient.put<ApiResponse<T>>(url, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  }
+
+  /**
+   * Make a POST request with form data
+   */
+  static async postFormData<T>(
+    url: string,
+    formData: FormData
+  ): Promise<ApiResponse<T>> {
+    const response = await apiClient.post<ApiResponse<T>>(url, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  }
+
+  /**
    * Make a PATCH request
    */
   static async patch<T>(url: string, data?: unknown): Promise<ApiResponse<T>> {

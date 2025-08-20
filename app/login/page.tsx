@@ -94,7 +94,7 @@ const LoginPage: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="space-y-6" dir="rtl">
             {/* Demo Credentials */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            {/* <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <h4 className="font-medium text-blue-900 mb-2">
                 بيانات تجريبية:
               </h4>
@@ -106,7 +106,7 @@ const LoginPage: React.FC = () => {
                   <strong>كلمة المرور:</strong> test11
                 </p>
               </div>
-            </div>
+            </div> */}
 
             {errors.general && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">

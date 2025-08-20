@@ -37,7 +37,7 @@ export default function AddPatientFilePage() {
   };
 
   return (
-    <ProtectedRoute allowedRoles={["doctor", "patient"]}>
+    <ProtectedRoute allowedRoles={["doctor"]}>
       <DoctorDashboardLayout>
         <div className="p-6 space-y-6">
           {/* Page Header */}

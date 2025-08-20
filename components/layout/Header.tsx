@@ -3,7 +3,12 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { User, LogOut } from "lucide-react";
-import { NAVIGATION_ITEMS, APP_CONFIG } from "@/lib/constants";
+import {
+  DOCTOR_NAV_ITEMS,
+  PATIENT_NAV_ITEMS,
+  PUBLIC_NAV_ITEMS,
+  APP_CONFIG,
+} from "@/lib/constants";
 import { useAuth } from "@/lib/contexts/AuthContext";
 import Button from "@/components/ui/Button";
 import Logo from "@/components/ui/Logo";
@@ -57,7 +62,13 @@ const Header: React.FC = () => {
 
           {/* Navigation - Center */}
           <nav className="hidden md:flex items-center gap-6">
-            {NAVIGATION_ITEMS.map((item) => (
+            {(() => {
+              // Determine navigation items based on user role
+              if (!user) return PUBLIC_NAV_ITEMS;
+              if (user.role === "doctor") return DOCTOR_NAV_ITEMS;
+              if (user.role === "patient") return PATIENT_NAV_ITEMS;
+              return PUBLIC_NAV_ITEMS;
+            })().map((item) => (
               <Link
                 key={item.href}
                 href={item.href}

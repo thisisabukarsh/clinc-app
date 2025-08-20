@@ -56,6 +56,10 @@ export interface RegistrationResponse {
   success: boolean;
   message: string;
   userId: string;
+  emailSent?: boolean;
+  // Development mode fields
+  otp?: string;
+  devMessage?: string;
 }
 
 export interface VerifyEmailOTPRequest {
@@ -75,6 +79,10 @@ export interface ResendEmailOTPRequest {
 export interface ResendEmailOTPResponse {
   success: boolean;
   message: string;
+  emailSent?: boolean;
+  // Development mode fields
+  otp?: string;
+  devMessage?: string;
 }
 
 export interface RefreshTokenRequest {
@@ -89,6 +97,9 @@ export interface ForgotPasswordResponse {
   success: boolean;
   message: string;
   userId: string;
+  // Development mode fields
+  otp?: string;
+  devMessage?: string;
 }
 
 export interface VerifyPasswordResetOTPRequest {

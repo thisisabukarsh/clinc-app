@@ -37,17 +37,31 @@ export default function RegisterClinicPage() {
         name: formData.doctorName,
         phone: formData.phone,
         role: "doctor" as const,
-        address: formData.clinicAddress,
+        // Doctor profile data
         specialty: formData.specialization,
         location: formData.clinicAddress,
         fee: formData.consultationFee,
+        // Clinic data (will be saved during registration)
+        clinicName: formData.clinicName,
+        clinicAddress: formData.clinicAddress,
+        clinicPhone: formData.phone,
+        clinicDescription: `${formData.specialization} clinic providing quality healthcare services.`,
       };
 
       const response = await AuthService.register(apiRequest);
 
       if (response.success && response.userId) {
-        // Redirect to OTP verification page with userId
-        router.push(`/verify-otp?userId=${response.userId}`);
+        // Redirect to OTP verification page with userId and dev OTP if available
+        let redirectUrl = `/verify-otp?userId=${response.userId}`;
+        if (response.otp) {
+          redirectUrl += `&devOTP=${
+            response.otp
+          }&devMessage=${encodeURIComponent(
+            response.devMessage ||
+              "🧪 Development Mode: OTP from clinic registration"
+          )}`;
+        }
+        router.push(redirectUrl);
       }
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };

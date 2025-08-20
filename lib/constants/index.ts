@@ -1,7 +1,23 @@
 import { NavItem } from "@/types";
 
-// Navigation items
-export const NAVIGATION_ITEMS: NavItem[] = [
+// Navigation items for authenticated doctors
+export const DOCTOR_NAV_ITEMS: NavItem[] = [
+  {
+    label: "الرئيسية",
+    href: "/",
+  },
+  {
+    label: "لوحة التحكم",
+    href: "/dashboard",
+  },
+  {
+    label: "ابحث عن طبيب",
+    href: "/doctors",
+  },
+];
+
+// Navigation items for authenticated patients
+export const PATIENT_NAV_ITEMS: NavItem[] = [
   {
     label: "الرئيسية",
     href: "/",
@@ -14,11 +30,29 @@ export const NAVIGATION_ITEMS: NavItem[] = [
     label: "ابحث عن طبيب",
     href: "/doctors",
   },
+];
+
+// Legacy export for backward compatibility
+export const AUTHENTICATED_NAV_ITEMS = PATIENT_NAV_ITEMS;
+
+// Navigation items for non-authenticated users
+export const PUBLIC_NAV_ITEMS: NavItem[] = [
+  {
+    label: "الرئيسية",
+    href: "/",
+  },
+  {
+    label: "ابحث عن طبيب",
+    href: "/doctors",
+  },
   {
     label: "سجل عياداتك",
     href: "/register-clinic",
   },
 ];
+
+// Legacy export for backward compatibility
+export const NAVIGATION_ITEMS = PUBLIC_NAV_ITEMS;
 
 // Medical specialties
 export const MEDICAL_SPECIALTIES = [

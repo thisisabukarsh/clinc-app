@@ -4,3 +4,7 @@ export { useMedicalSpecialties } from "./useMedicalSpecialties";
 export { useTopRatedDoctors } from "./useTopRatedDoctors";
 export { useAppointmentBooking } from "./useAppointmentBooking";
 export { usePatientAppointments } from "./usePatientAppointments";
+export { useDoctorProfile } from "./useDoctorProfile";
+export { useDoctorClinic } from "./useDoctorClinic";
+export { useDoctorAppointments } from "./useDoctorAppointments";
+export { useDoctorStatistics } from "./useDoctorStatistics";

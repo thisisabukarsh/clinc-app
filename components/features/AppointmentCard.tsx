@@ -14,6 +14,7 @@ interface AppointmentCardProps {
   onCancel?: (appointmentId: string) => void;
   onLeaveReview?: (appointmentId: string) => void;
   onEdit?: (appointment: Appointment) => void;
+  canCancel?: boolean;
   className?: string;
 }
 
@@ -24,6 +25,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
   onCancel,
   onLeaveReview,
   onEdit,
+  canCancel = true,
   className = "",
 }) => {
   const isUpcoming = appointment.status === "upcoming";
@@ -45,14 +47,31 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
               >
                 تعديل الموعد
               </Button>
-              <Button
-                onClick={() => onCancel?.(appointment.id)}
-                variant="outline"
-                size="sm"
-                className="bg-blue-100 hover:bg-blue-200 text-gray-700 border-blue-200 px-4 py-2 rounded-lg min-w-[120px]"
-              >
-                إلغاء
-              </Button>
+              {canCancel ? (
+                <Button
+                  onClick={() => onCancel?.(appointment.id)}
+                  variant="outline"
+                  size="sm"
+                  className="bg-blue-100 hover:bg-blue-200 text-gray-700 border-blue-200 px-4 py-2 rounded-lg min-w-[120px]"
+                >
+                  إلغاء
+                </Button>
+              ) : (
+                <div className="relative group">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled
+                    className="bg-gray-100 text-gray-400 border-gray-200 px-4 py-2 rounded-lg min-w-[120px] cursor-not-allowed"
+                  >
+                    إلغاء
+                  </Button>
+                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10">
+                    لا يمكن الإلغاء قبل أقل من 24 ساعة
+                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+                  </div>
+                </div>
+              )}
             </>
           )}
 

@@ -1,13 +1,26 @@
 import { useState, useCallback, useEffect } from "react";
 import {
   getPatientAppointments,
-  cancelAppointment,
+  cancelPatientAppointment,
   getMedicalHistory,
-  GetAppointmentsParams,
-  PatientAppointmentResponse,
-  MedicalHistoryResponse,
+} from "@/lib/api/services";
+import type {
+  PatientAppointment,
+  MedicalHistoryRecord,
 } from "@/lib/api/services";
 import { toast } from "react-hot-toast";
+
+// Local interfaces for the hook
+interface GetAppointmentsParams {
+  status?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
+interface MedicalHistoryResponse {
+  medicalRecords: MedicalHistoryRecord[];
+  reports: unknown[];
+}
 
 interface UsePatientAppointmentsProps {
   initialFilters?: GetAppointmentsParams;
@@ -16,9 +29,7 @@ interface UsePatientAppointmentsProps {
 export const usePatientAppointments = ({
   initialFilters,
 }: UsePatientAppointmentsProps = {}) => {
-  const [appointments, setAppointments] = useState<
-    PatientAppointmentResponse[]
-  >([]);
+  const [appointments, setAppointments] = useState<PatientAppointment[]>([]);
   const [medicalHistory, setMedicalHistory] =
     useState<MedicalHistoryResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -34,7 +45,7 @@ export const usePatientAppointments = ({
 
       try {
         console.log("🔄 Fetching appointments...", { params });
-        const data = await getPatientAppointments(params);
+        const data = await getPatientAppointments();
         console.log("✅ Appointments fetched successfully:", data);
         setAppointments(data);
         setError(null); // Clear any previous errors
@@ -97,7 +108,7 @@ export const usePatientAppointments = ({
     setLoading(true);
 
     try {
-      const result = await cancelAppointment(appointmentId);
+      const result = await cancelPatientAppointment(appointmentId);
 
       if (result.success) {
         toast.success("تم إلغاء الموعد بنجاح");

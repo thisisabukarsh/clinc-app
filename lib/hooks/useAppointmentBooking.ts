@@ -1,11 +1,16 @@
 import { useState, useCallback } from "react";
 import {
   getDoctorSchedule,
-  bookAppointment,
+  bookPatientAppointment,
   transformScheduleToSlots,
-  AppointmentSlot,
 } from "@/lib/api/services";
 import { toast } from "react-hot-toast";
+
+interface AppointmentSlot {
+  time: string;
+  available: boolean;
+  price: number;
+}
 
 interface UseAppointmentBookingProps {
   doctorId: string;
@@ -33,13 +38,44 @@ export const useAppointmentBooking = ({
         const slots = transformScheduleToSlots(schedule, doctorPrice);
         setTimeSlots(slots);
       } catch (error: unknown) {
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : "فشل في تحميل المواعيد المتاحة";
+        console.error("Error fetching doctor schedule:", error);
+
+        let errorMessage = "فشل في تحميل المواعيد المتاحة";
+
+        if (error instanceof Error) {
+          // Handle specific error types
+          if (
+            error.message.includes("404") ||
+            error.message.includes("Doctor not found")
+          ) {
+            errorMessage = "الطبيب غير موجود. يرجى اختيار طبيب آخر.";
+          } else if (
+            error.message.includes("400") ||
+            error.message.includes("Invalid")
+          ) {
+            errorMessage = "خطأ في البيانات المرسلة. يرجى المحاولة مرة أخرى.";
+          } else if (
+            error.message.includes("500") ||
+            error.message.includes("Internal server")
+          ) {
+            errorMessage = "خطأ في الخادم. يرجى المحاولة لاحقاً.";
+          } else if (
+            error.message.includes("Network") ||
+            error.message.includes("ECONNREFUSED")
+          ) {
+            errorMessage = "مشكلة في الاتصال. تأكد من الاتصال بالإنترنت.";
+          } else {
+            errorMessage = error.message;
+          }
+        }
+
         setError(errorMessage);
         setTimeSlots([]);
-        toast.error(errorMessage);
+
+        // Don't show toast for 404 errors as they're handled in the UI
+        if (!errorMessage.includes("غير موجود")) {
+          toast.error(errorMessage);
+        }
       } finally {
         setLoading(false);
       }
@@ -54,7 +90,7 @@ export const useAppointmentBooking = ({
       try {
         const formattedDate = appointmentDate.toISOString().split("T")[0];
 
-        const response = await bookAppointment({
+        const response = await bookPatientAppointment({
           doctorId,
           appointmentDate: formattedDate,
           timeSlot,

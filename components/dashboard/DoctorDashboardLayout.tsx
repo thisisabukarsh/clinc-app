@@ -12,6 +12,9 @@ import {
   Heart,
   Menu,
   X,
+  Clock,
+  FileText,
+  Upload,
 } from "lucide-react";
 
 interface DoctorDashboardLayoutProps {
@@ -44,6 +47,24 @@ const DoctorDashboardLayout: React.FC<DoctorDashboardLayoutProps> = ({
       href: "/dashboard/patient-files",
       icon: Users,
       isActive: pathname === "/dashboard/patient-files",
+    },
+    {
+      label: "السجلات الطبية",
+      href: "/dashboard/medical-records",
+      icon: FileText,
+      isActive: pathname === "/dashboard/medical-records",
+    },
+    {
+      label: "تقارير المرضى",
+      href: "/dashboard/reports",
+      icon: Upload,
+      isActive: pathname === "/dashboard/reports",
+    },
+    {
+      label: "الجدول الأسبوعي",
+      href: "/dashboard/schedule",
+      icon: Clock,
+      isActive: pathname === "/dashboard/schedule",
     },
     {
       label: "الإعدادات",
