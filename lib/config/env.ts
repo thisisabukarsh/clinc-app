@@ -8,7 +8,7 @@ const requiredEnvVars = ["NEXT_PUBLIC_API_BASE_URL"] as const;
 
 // Development defaults
 const developmentDefaults = {
-  NEXT_PUBLIC_API_BASE_URL: "http://localhost:5000/api",
+  NEXT_PUBLIC_API_BASE_URL: "https://threeiadti-be.onrender.com/api",
   NEXT_PUBLIC_APP_ENV: "development",
 } as const;
 
