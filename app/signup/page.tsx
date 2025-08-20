@@ -65,7 +65,7 @@ const SignupPage: React.FC = () => {
         newErrors.confirmPassword = "كلمة المرور غير متطابقة";
       }
 
-      // Optional field validations
+      // Optional field validations - only validate if provided
       if (formData.address && formData.address.length < 5) {
         newErrors.address = "العنوان يجب أن يكون 5 أحرف على الأقل";
       }
@@ -238,7 +238,6 @@ const SignupPage: React.FC = () => {
                 onChange={(e) => handleInputChange("phone", e.target.value)}
                 placeholder="07xxxxxxxx"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right"
-                required
               />
               {errors.phone && (
                 <p className="text-sm text-red-600 text-right">
@@ -254,7 +253,6 @@ const SignupPage: React.FC = () => {
               </label>
               <input
                 type="text"
-                required
                 value={formData.address}
                 onChange={(e) => handleInputChange("address", e.target.value)}
                 placeholder="أدخل عنوانك"
@@ -274,7 +272,6 @@ const SignupPage: React.FC = () => {
               </label>
               <input
                 type="date"
-                required
                 value={formData.dateOfBirth}
                 onChange={(e) =>
                   handleInputChange("dateOfBirth", e.target.value)

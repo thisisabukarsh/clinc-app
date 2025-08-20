@@ -50,9 +50,19 @@ class TokenManager {
 // Request Interceptor
 apiClient.interceptors.request.use(
   (config) => {
-    const token = TokenManager.getToken();
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // Skip token for authentication endpoints
+    const isAuthEndpoint =
+      config.url?.includes("/auth/login") ||
+      config.url?.includes("/auth/register") ||
+      config.url?.includes("/auth/forgot-password") ||
+      config.url?.includes("/auth/verify-email-otp") ||
+      config.url?.includes("/auth/resend-email-otp");
+
+    if (!isAuthEndpoint) {
+      const token = TokenManager.getToken();
+      if (token && config.headers) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
 
     // Add request timestamp for debugging
@@ -63,7 +73,12 @@ apiClient.interceptors.request.use(
           data: config.data,
           params: config.params,
           headers: config.headers,
-          token: token ? "Present" : "Missing",
+          token: isAuthEndpoint
+            ? "Not Required"
+            : TokenManager.getToken()
+            ? "Present"
+            : "Missing",
+          isAuthEndpoint,
         }
       );
     }
