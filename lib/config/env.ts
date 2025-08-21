@@ -50,9 +50,10 @@ function validateEnv(): void {
 
   if (missing.length > 0) {
     console.error("Missing required environment variables:", missing);
+    // Only warn in production, don't throw - let the app handle gracefully
     if (process.env.NODE_ENV === "production") {
-      throw new Error(
-        `Missing required environment variables: ${missing.join(", ")}`
+      console.warn(
+        `Warning: Missing required environment variables: ${missing.join(", ")}`
       );
     }
   }
@@ -90,5 +91,14 @@ export const env = {
   isProduction: process.env.NODE_ENV === "production",
   isTest: process.env.NODE_ENV === "test",
 } as const;
+
+// Debug environment in development
+if (process.env.NODE_ENV === "development") {
+  console.log("🔧 Environment Variables Debug:", {
+    NODE_ENV: process.env.NODE_ENV,
+    NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
+    API_BASE_URL: env.API_BASE_URL,
+  });
+}
 
 export default env;

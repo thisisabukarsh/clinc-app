@@ -18,11 +18,13 @@ const API_CONFIG = {
 };
 
 // Debug log the API configuration
-console.log("🔧 API Configuration:", {
-  baseURL: env.API_BASE_URL,
-  timeout: env.API_TIMEOUT,
-  NODE_ENV: process.env.NODE_ENV,
-});
+if (process.env.NODE_ENV === "development") {
+  console.log("🔧 API Configuration:", {
+    baseURL: env.API_BASE_URL,
+    timeout: env.API_TIMEOUT,
+    NODE_ENV: process.env.NODE_ENV,
+  });
+}
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create(API_CONFIG);
