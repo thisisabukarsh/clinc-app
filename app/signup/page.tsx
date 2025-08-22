@@ -49,7 +49,9 @@ const SignupPage: React.FC = () => {
         newErrors.email = "البريد الإلكتروني غير صحيح";
       }
 
-      if (formData.phone && !/^(\+962|0)?[7-9][0-9]{8}$/.test(formData.phone)) {
+      if (!formData.phone) {
+        newErrors.phone = "رقم الهاتف مطلوب";
+      } else if (!/^(\+962|0)?[7-9][0-9]{8}$/.test(formData.phone)) {
         newErrors.phone = "رقم الهاتف غير صحيح";
       }
 
@@ -65,12 +67,16 @@ const SignupPage: React.FC = () => {
         newErrors.confirmPassword = "كلمة المرور غير متطابقة";
       }
 
-      // Optional field validations - only validate if provided
-      if (formData.address && formData.address.length < 5) {
+      // Required field validations for patient registration
+      if (!formData.address) {
+        newErrors.address = "العنوان مطلوب";
+      } else if (formData.address.length < 5) {
         newErrors.address = "العنوان يجب أن يكون 5 أحرف على الأقل";
       }
 
-      if (formData.dateOfBirth) {
+      if (!formData.dateOfBirth) {
+        newErrors.dateOfBirth = "تاريخ الميلاد مطلوب";
+      } else {
         const birthDate = new Date(formData.dateOfBirth);
         const today = new Date();
         const age = today.getFullYear() - birthDate.getFullYear();
@@ -115,10 +121,10 @@ const SignupPage: React.FC = () => {
         email: formData.email,
         password: formData.password,
         name: formData.name,
-        phone: formData.phone || undefined,
+        phone: formData.phone,
         role: "patient",
-        address: formData.address || undefined,
-        dateOfBirth: formData.dateOfBirth || undefined,
+        address: formData.address,
+        dateOfBirth: formData.dateOfBirth,
       });
 
       if (response.success && response.userId) {
@@ -236,6 +242,7 @@ const SignupPage: React.FC = () => {
                 onChange={(e) => handleInputChange("phone", e.target.value)}
                 placeholder="07xxxxxxxx"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right"
+                required
               />
               {errors.phone && (
                 <p className="text-sm text-red-600 text-right">
@@ -255,6 +262,7 @@ const SignupPage: React.FC = () => {
                 onChange={(e) => handleInputChange("address", e.target.value)}
                 placeholder="أدخل عنوانك"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right"
+                required
               />
               {errors.address && (
                 <p className="text-sm text-red-600 text-right">
@@ -275,6 +283,7 @@ const SignupPage: React.FC = () => {
                   handleInputChange("dateOfBirth", e.target.value)
                 }
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right"
+                required
               />
               {errors.dateOfBirth && (
                 <p className="text-sm text-red-600 text-right">

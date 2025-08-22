@@ -92,13 +92,13 @@ export const env = {
   isTest: process.env.NODE_ENV === "test",
 } as const;
 
-// Debug environment in development
-if (process.env.NODE_ENV === "development") {
-  console.log("🔧 Environment Variables Debug:", {
-    NODE_ENV: process.env.NODE_ENV,
-    NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
-    API_BASE_URL: env.API_BASE_URL,
-  });
-}
+// Debug environment in all modes (temporarily for debugging)
+console.log("🔧 Environment Variables Debug:", {
+  NODE_ENV: process.env.NODE_ENV,
+  NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  API_BASE_URL: env.API_BASE_URL,
+  isDevelopment: env.isDevelopment,
+  isProduction: env.isProduction,
+});
 
 export default env;
