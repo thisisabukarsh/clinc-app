@@ -193,13 +193,6 @@ const LoginPage: React.FC = () => {
             >
               إنشاء حساب جديد
             </Link>
-
-            {/* Sign Up Link */}
-            <div className="text-center">
-              <p className="text-sm text-gray-600">
-                أنضم لعائلة السحوب العصبية إليوم الأول جميعات
-              </p>
-            </div>
           </form>
         </div>
       </div>
