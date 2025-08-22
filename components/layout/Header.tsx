@@ -10,6 +10,7 @@ import {
   APP_CONFIG,
 } from "@/lib/constants";
 import { useAuth } from "@/lib/contexts/AuthContext";
+import Heart from "@/components/svgs/Heart";
 import Button from "@/components/ui/Button";
 import Logo from "@/components/ui/Logo";
 
@@ -49,7 +50,8 @@ const Header: React.FC = () => {
           {/* Logo - Right Side (first in RTL) */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center gap-3">
-              <Logo width={40} height={40} />
+              {/* <Logo width={40} height={40} /> */}
+              <Heart width={40} height={40} fill="#3B82F6" />
               <span
                 className={`text-xl font-bold ${
                   isScrolled ? "text-gray-900" : "text-white"
