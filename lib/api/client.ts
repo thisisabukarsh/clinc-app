@@ -5,24 +5,25 @@ import axios, {
   AxiosProgressEvent,
 } from "axios";
 import { ApiResponse, ApiError } from "@/types/api";
-import { env } from "@/lib/config/env";
 
-// API Configuration
+// Simple API Configuration
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  "https://threeiadti-be.onrender.com/api";
+
 const API_CONFIG = {
-  baseURL: env.API_BASE_URL,
-  timeout: env.API_TIMEOUT,
+  baseURL: API_BASE_URL,
+  timeout: 30000,
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
   },
 };
 
-// Debug log the API configuration (temporarily for all environments)
-console.log("🔧 API Configuration:", {
-  baseURL: env.API_BASE_URL,
-  timeout: env.API_TIMEOUT,
-  NODE_ENV: process.env.NODE_ENV,
-  configBaseURL: API_CONFIG.baseURL,
+// Debug log
+console.log("🔧 Simple API Config:", {
+  baseURL: API_BASE_URL,
+  envVar: process.env.NEXT_PUBLIC_API_BASE_URL,
 });
 
 // Create axios instance
@@ -51,6 +52,13 @@ class TokenManager {
 // Request Interceptor
 apiClient.interceptors.request.use(
   (config) => {
+    // Simple request logging
+    console.log(
+      `🔄 REQUEST: ${config.method?.toUpperCase()} ${config.baseURL}${
+        config.url
+      }`
+    );
+
     // Skip token for authentication endpoints
     const isAuthEndpoint =
       config.url?.includes("/auth/login") ||
