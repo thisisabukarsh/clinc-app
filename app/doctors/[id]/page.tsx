@@ -6,7 +6,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { BookOpen, Loader2 } from "lucide-react";
 import { getDoctorDetails, APIDoctor } from "@/lib/api/services";
-import { clinicImages } from "@/lib/mockData";
 import { DoctorProfileHeader } from "@/components/doctor-page";
 import { AppointmentBooking, ClinicImageSlider } from "@/components/features";
 import MainLayout from "@/components/layout/MainLayout";
@@ -24,6 +23,22 @@ interface BookingDetails {
 
 // Transform API doctor data to match existing component expectations
 const transformDoctorData = (apiDoctor: APIDoctor) => {
+  // Handle doctor image with proper fallback
+  let doctorImage = "/doctor.png"; // Default fallback
+
+  if (apiDoctor.photo) {
+    // If photo path starts with /uploads, prepend the API base URL
+    if (apiDoctor.photo.startsWith("/uploads")) {
+      doctorImage = `https://threeiadti-be.onrender.com${apiDoctor.photo}`;
+    } else if (apiDoctor.photo.startsWith("http")) {
+      // If it's already a full URL, use it as is
+      doctorImage = apiDoctor.photo;
+    } else {
+      // Otherwise, construct the full URL
+      doctorImage = `https://threeiadti-be.onrender.com/uploads/doctors/${apiDoctor.photo}`;
+    }
+  }
+
   return {
     id: apiDoctor._id,
     name: apiDoctor.userId.name,
@@ -31,11 +46,11 @@ const transformDoctorData = (apiDoctor: APIDoctor) => {
     location: apiDoctor.location,
     fee: apiDoctor.fee,
     price: apiDoctor.fee, // Same as fee for compatibility
-    currency: "دينار أردني", // Default currency
+    currency: "JD", // Jordanian Dinar (consistent with other pages)
     clinic: apiDoctor.clinic?.name || "العيادة",
     phone: apiDoctor.userId.phone || apiDoctor.clinic?.phone || "",
     email: apiDoctor.userId.email,
-    image: apiDoctor.photo || "",
+    image: doctorImage,
     rating: 4.8, // Default rating - you can add this to your backend later
     reviewsCount: 25, // Default reviews - you can add this to your backend later
     // Mock data for fields not yet in API
@@ -182,17 +197,20 @@ export default function DoctorDetailPage() {
                   {/* Doctor Image */}
                   <div className="lg:col-span-1 flex justify-center">
                     <div className="w-64 h-64 bg-gray-200 rounded-3xl flex items-center justify-center overflow-hidden">
-                      {doctor.photo ? (
-                        <Image
-                          src={doctor.photo}
-                          alt={doctor.userId.name}
-                          width={256}
-                          height={256}
-                          className="w-full h-full object-contain"
-                        />
-                      ) : (
-                        <span className="text-6xl">👨‍⚕️</span>
-                      )}
+                      <Image
+                        src={transformDoctorData(doctor).image}
+                        alt={doctor.userId.name}
+                        width={256}
+                        height={256}
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          // Fallback to default doctor image on error
+                          const target = e.target as HTMLImageElement;
+                          target.src = "/doctor.png";
+                        }}
+                        placeholder="blur"
+                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                      />
                     </div>
                   </div>
                   {/* Doctor Info */}
@@ -280,20 +298,34 @@ export default function DoctorDetailPage() {
                 />
               </div>
             </div>
-            <div className="mt-16">
-              <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
-                صور العيادة
-              </h3>
-              <ClinicImageSlider
-                images={clinicImages}
-                autoPlay={true}
-                autoPlayInterval={4000}
-                showArrows={true}
-                showDots={true}
-                showCaptions={true}
-                className="w-full"
-              />
-            </div>
+            {doctor.clinic?.images && doctor.clinic.images.length > 0 && (
+              <div className="mt-16">
+                <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
+                  صور العيادة
+                </h3>
+                <ClinicImageSlider
+                  images={doctor.clinic.images.map((imagePath, index) => ({
+                    id: `clinic-image-${index}`,
+                    src: imagePath.startsWith("/uploads")
+                      ? `https://threeiadti-be.onrender.com${imagePath}`
+                      : imagePath.startsWith("http")
+                      ? imagePath
+                      : `https://threeiadti-be.onrender.com/uploads/clinics/${imagePath}`,
+                    alt: `صورة من عيادة ${doctor.clinic?.name || "الطبيب"}`,
+                    title: `${doctor.clinic?.name || "العيادة"}`,
+                    description:
+                      doctor.clinic?.description ||
+                      `صورة من عيادة ${doctor.clinic?.name || "الطبيب"}`,
+                  }))}
+                  autoPlay={true}
+                  autoPlayInterval={4000}
+                  showArrows={true}
+                  showDots={true}
+                  showCaptions={true}
+                  className="w-full"
+                />
+              </div>
+            )}
           </div>
         </div>
 
