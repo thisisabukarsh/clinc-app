@@ -32,15 +32,20 @@ export const MedicalSpecialtyCard: React.FC<MedicalSpecialtyCardProps> = ({
       <div className="flex flex-col items-center text-center">
         {/* Icon Container */}
         <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
-          <div className="relative w-10 h-10">
-            <Image
-              src={specialty.iconUrl}
-              alt={specialty.name}
-              fill
-              className="object-contain"
-              sizes="40px"
-            />
-          </div>
+          {specialty.iconUrl.startsWith("http") ||
+          specialty.iconUrl.startsWith("/") ? (
+            <div className="relative w-10 h-10">
+              <Image
+                src={specialty.iconUrl}
+                alt={specialty.name}
+                fill
+                className="object-contain"
+                sizes="40px"
+              />
+            </div>
+          ) : (
+            <div className="text-3xl">{specialty.iconUrl}</div>
+          )}
         </div>
 
         {/* Specialty Name */}
