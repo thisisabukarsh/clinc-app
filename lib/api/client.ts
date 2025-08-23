@@ -5,6 +5,11 @@ import axios, {
   AxiosProgressEvent,
 } from "axios";
 import { ApiResponse, ApiError } from "@/types/api";
+import toast from "react-hot-toast";
+
+// Track last toast message to prevent spam
+let lastToastTime = 0;
+let lastToastMessage = "";
 
 // Simple API Configuration
 const API_BASE_URL =
@@ -135,11 +140,32 @@ apiClient.interceptors.response.use(
       );
     }
 
-    // Handle 401 Unauthorized - Clear tokens but don't redirect immediately
-    // Let the calling component handle the redirect
+    // Handle 401 Unauthorized - Clear tokens and show login message
     if (error.response?.status === 401) {
       TokenManager.clearTokens();
-      // Don't redirect here - let the component handle it
+
+      // Prevent spam of login messages (debounce)
+      const now = Date.now();
+      const loginMessage = "يرجى تسجيل الدخول للمتابعة";
+
+      if (now - lastToastTime > 3000 || lastToastMessage !== loginMessage) {
+        toast.error(loginMessage, {
+          duration: 4000,
+          style: {
+            background: "#FEF2F2",
+            border: "1px solid #FECACA",
+            color: "#991B1B",
+            fontSize: "14px",
+            fontWeight: "500",
+          },
+          icon: "🔐",
+        });
+
+        lastToastTime = now;
+        lastToastMessage = loginMessage;
+      }
+
+      // Let the calling component handle the redirect
       // This prevents infinite redirects and gives better UX
     }
 
@@ -148,11 +174,35 @@ apiClient.interceptors.response.use(
       string,
       unknown
     >;
+
+    // Get user-friendly error message
+    let userMessage = (responseData?.message as string) || error.message;
+
+    // Handle common status codes with Arabic messages
+    if (error.response?.status) {
+      switch (error.response.status) {
+        case 401:
+          userMessage = "يرجى تسجيل الدخول للمتابعة";
+          break;
+        case 403:
+          userMessage = "ليس لديك صلاحية للوصول إلى هذا المحتوى";
+          break;
+        case 404:
+          userMessage = "المحتوى المطلوب غير موجود";
+          break;
+        case 500:
+          userMessage = "حدث خطأ في الخادم، يرجى المحاولة لاحقاً";
+          break;
+        case 503:
+          userMessage = "الخدمة غير متاحة حالياً، يرجى المحاولة لاحقاً";
+          break;
+        default:
+          userMessage = userMessage || "حدث خطأ غير متوقع";
+      }
+    }
+
     const apiError: ApiError = {
-      message:
-        (responseData?.message as string) ||
-        error.message ||
-        "An unexpected error occurred",
+      message: userMessage,
       status: error.response?.status || 500,
       code: (responseData?.code as string) || error.code,
       details: responseData?.errors || null,
