@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Doctor } from "@/types";
 import Button from "@/components/ui/Button";
 import { formatCurrency } from "@/lib/utils";
+import DoctorImage from "@/components/ui/DoctorImage";
 
 interface TopRatedDoctorCardProps {
   doctor: Doctor;
@@ -42,23 +43,18 @@ export const TopRatedDoctorCard: React.FC<TopRatedDoctorCardProps> = ({
         {/* Doctor Image - Full view, no border, no radius */}
         <div className="absolute inset-0 flex items-center justify-center -bottom-6">
           <div className="relative w-full h-full ">
-            {doctor.image ? (
-              <Image
-                src={"https://threeiadti-be.onrender.com" + doctor.image}
-                alt={doctor.name}
-                fill
-                className="object-contain"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              />
-            ) : (
-              <Image
-                src="/doctor.png"
-                alt={doctor.name}
-                fill
-                className="object-contain"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              />
-            )}
+            <Image
+              src={doctor.image}
+              alt={doctor.name}
+              fill
+              className="object-contain"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              onError={(e) => {
+                // Fallback to default doctor image on error
+                const target = e.target as HTMLImageElement;
+                target.src = "/doctor.png";
+              }}
+            />
           </div>
         </div>
       </div>

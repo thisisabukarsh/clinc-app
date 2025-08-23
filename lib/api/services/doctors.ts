@@ -468,6 +468,22 @@ export const updateDoctorSchedule = async (
  * Transform API doctor data to UI doctor format
  */
 const transformAPIDoctorToDoctor = (apiDoctor: APIDoctor): Doctor => {
+  // Handle doctor image with proper fallback
+  let doctorImage = "/doctor.png"; // Default fallback
+  
+  if (apiDoctor.photo) {
+    // If photo path starts with /uploads, prepend the API base URL
+    if (apiDoctor.photo.startsWith("/uploads")) {
+      doctorImage = `https://threeiadti-be.onrender.com${apiDoctor.photo}`;
+    } else if (apiDoctor.photo.startsWith("http")) {
+      // If it's already a full URL, use it as is
+      doctorImage = apiDoctor.photo;
+    } else {
+      // Otherwise, construct the full URL
+      doctorImage = `https://threeiadti-be.onrender.com/uploads/doctors/${apiDoctor.photo}`;
+    }
+  }
+  
   return {
     id: apiDoctor._id,
     name: apiDoctor.userId?.name || "Unknown Doctor",
@@ -475,7 +491,7 @@ const transformAPIDoctorToDoctor = (apiDoctor: APIDoctor): Doctor => {
     rating: 4.5, // Default rating since backend doesn't provide this yet
     price: apiDoctor.fee,
     currency: "JD",
-    image: apiDoctor.photo || "/doctor.png", // Default image
+    image: doctorImage,
     clinic: apiDoctor.clinic?.name || "Private Clinic",
     location: apiDoctor.location,
     biography:
