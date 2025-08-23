@@ -1,9 +1,10 @@
 /**
  * Doctor API Services
- * Handles all doctor-related API calls for the dashboard
+ * Handles all doctor-related API calls for the dashboard and public pages
  */
 
 import { ApiHelper } from "../client";
+import { APIDoctor, Doctor } from "@/types";
 
 // Doctor Profile Types
 export interface DoctorProfileResponse {
@@ -460,5 +461,49 @@ export const updateDoctorSchedule = async (
       throw error;
     }
     throw new Error("An unexpected error occurred while updating schedule");
+  }
+};
+
+/**
+ * Transform API doctor data to UI doctor format
+ */
+const transformAPIDoctorToDoctor = (apiDoctor: APIDoctor): Doctor => {
+  return {
+    id: apiDoctor._id,
+    name: apiDoctor.userId?.name || "Unknown Doctor",
+    specialty: apiDoctor.specialty,
+    rating: 4.5, // Default rating since backend doesn't provide this yet
+    price: apiDoctor.fee,
+    currency: "JD",
+    image: apiDoctor.photo || "/doctor.png", // Default image
+    clinic: apiDoctor.clinic?.name || "Private Clinic",
+    location: apiDoctor.location,
+    biography:
+      apiDoctor.biography ||
+      `Experienced ${apiDoctor.specialty} specialist providing quality healthcare.`,
+    experience: apiDoctor.experience || "5+ years",
+    education: apiDoctor.education || "Medical Degree",
+  };
+};
+
+/**
+ * Get all doctors for public display (homepage, search, etc.)
+ */
+export const getAllDoctors = async (): Promise<Doctor[]> => {
+  try {
+    const response = await ApiHelper.get<APIDoctor[]>("/doctor");
+
+    if (!response.success || !response.data) {
+      throw new Error(response.message || "Failed to fetch doctors");
+    }
+
+    // Transform API response to UI format
+    return response.data.map(transformAPIDoctorToDoctor);
+  } catch (error: unknown) {
+    console.error("Error fetching doctors:", error);
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error("An unexpected error occurred while fetching doctors");
   }
 };

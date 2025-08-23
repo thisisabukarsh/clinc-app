@@ -6,12 +6,15 @@ import HeroSection from "@/components/home/HeroSection";
 import MedicalSpecialtiesSection from "@/components/home/MedicalSpecialtiesSection";
 import TopRatedDoctorsSection from "@/components/home/TopRatedDoctorsSection";
 import WhyMyClinicsSection from "@/components/home/WhyMyClinicsSection";
-import { medicalSpecialties, topRatedDoctors } from "@/lib/mockData";
+import { medicalSpecialties } from "@/lib/mockData";
 import { MedicalSpecialty, Doctor } from "@/types";
 import { useRouter } from "next/navigation";
+import { useAllDoctors } from "@/lib/hooks";
 
 export default function HomePage() {
   const router = useRouter();
+  const { doctors, loading, error } = useAllDoctors();
+
   const handleSpecialtyClick = (specialty: MedicalSpecialty) => {
     console.log("Specialty clicked:", specialty);
     // Handle specialty selection - could navigate to specialty page
@@ -38,7 +41,9 @@ export default function HomePage() {
         onSpecialtyClick={handleSpecialtyClick}
       />
       <TopRatedDoctorsSection
-        doctors={topRatedDoctors}
+        doctors={doctors}
+        loading={loading}
+        error={error}
         onDoctorClick={handleDoctorClick}
         onBookAppointment={handleBookAppointment}
       />
