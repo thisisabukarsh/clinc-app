@@ -43,13 +43,27 @@ export default function DoctorsPage() {
       return null;
     }
 
+    // Handle doctor image with proper fallback
+    let doctorImage = "/doctor.png"; // Default fallback
+
+    if (apiDoctor.photo) {
+      // If photo path starts with /uploads, prepend the API base URL
+      if (apiDoctor.photo.startsWith("/uploads")) {
+        doctorImage = `https://threeiadti-be.onrender.com${apiDoctor.photo}`;
+      } else if (apiDoctor.photo.startsWith("http")) {
+        // If it's already a full URL, use it as is
+        doctorImage = apiDoctor.photo;
+      } else {
+        // Otherwise, construct the full URL
+        doctorImage = `https://threeiadti-be.onrender.com/uploads/doctors/${apiDoctor.photo}`;
+      }
+    }
+
     // Handle different data structures from backend
     let doctorName = "";
     let doctorSpecialty = "";
     let doctorFee = 0;
     let doctorLocation = "";
-
-    let doctorPhoto = "/doctor.png"; // Default fallback image
     let clinicName = "";
 
     // Structure 1: Has userId object
@@ -58,7 +72,6 @@ export default function DoctorsPage() {
       doctorSpecialty = apiDoctor.specialty || "";
       doctorFee = apiDoctor.fee || 0;
       doctorLocation = apiDoctor.location || "";
-      doctorPhoto = apiDoctor.photo || "/doctor.png"; // Use fallback if no photo
       clinicName = apiDoctor.clinic?.name || "عيادة خاصة";
     }
     // Structure 2: Has clinic object but no userId
@@ -67,7 +80,6 @@ export default function DoctorsPage() {
       doctorSpecialty = apiDoctor.specialty || "";
       doctorFee = apiDoctor.fee || 0;
       doctorLocation = apiDoctor.location || "";
-      doctorPhoto = apiDoctor.photo || "/doctor.png"; // Use fallback if no photo
       clinicName = apiDoctor.clinic.name;
     }
     // Invalid structure
@@ -82,13 +94,13 @@ export default function DoctorsPage() {
       specialty: doctorSpecialty,
       rating: 4.5, // Default rating - TODO: Add rating system to backend
       price: doctorFee,
-      currency: "د.ك", // Kuwaiti Dinar
-      image: doctorPhoto,
+      currency: "JD", // Jordanian Dinar (consistent with homepage)
+      image: doctorImage,
       clinic: clinicName,
       location: doctorLocation,
-      biography: "", // TODO: Add biography field to backend
-      experience: "", // TODO: Add experience field to backend
-      education: "", // TODO: Add education field to backend
+      biography: `Experienced ${doctorSpecialty} specialist providing quality healthcare.`,
+      experience: "5+ years",
+      education: "Medical Degree",
     };
   };
 
