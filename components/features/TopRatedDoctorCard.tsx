@@ -4,7 +4,6 @@ import Image from "next/image";
 import { Doctor } from "@/types";
 import Button from "@/components/ui/Button";
 import { formatCurrency } from "@/lib/utils";
-import DoctorImage from "@/components/ui/DoctorImage";
 
 interface TopRatedDoctorCardProps {
   doctor: Doctor;

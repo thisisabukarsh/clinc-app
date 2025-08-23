@@ -45,8 +45,16 @@ export default function DoctorImage({
       />
       {hasError && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-full">
-          <svg className="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+          <svg
+            className="w-8 h-8 text-gray-400"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fillRule="evenodd"
+              d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+              clipRule="evenodd"
+            />
           </svg>
         </div>
       )}

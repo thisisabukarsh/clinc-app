@@ -470,7 +470,7 @@ export const updateDoctorSchedule = async (
 const transformAPIDoctorToDoctor = (apiDoctor: APIDoctor): Doctor => {
   // Handle doctor image with proper fallback
   let doctorImage = "/doctor.png"; // Default fallback
-  
+
   if (apiDoctor.photo) {
     // If photo path starts with /uploads, prepend the API base URL
     if (apiDoctor.photo.startsWith("/uploads")) {
@@ -483,7 +483,7 @@ const transformAPIDoctorToDoctor = (apiDoctor: APIDoctor): Doctor => {
       doctorImage = `https://threeiadti-be.onrender.com/uploads/doctors/${apiDoctor.photo}`;
     }
   }
-  
+
   return {
     id: apiDoctor._id,
     name: apiDoctor.userId?.name || "Unknown Doctor",
