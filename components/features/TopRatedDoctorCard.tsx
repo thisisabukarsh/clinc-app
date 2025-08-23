@@ -44,7 +44,7 @@ export const TopRatedDoctorCard: React.FC<TopRatedDoctorCardProps> = ({
           <div className="relative w-full h-full ">
             {doctor.image ? (
               <Image
-                src={"https://threeiadti-be.onrender.com/" + doctor.image}
+                src={"https://threeiadti-be.onrender.com" + doctor.image}
                 alt={doctor.name}
                 fill
                 className="object-contain"
